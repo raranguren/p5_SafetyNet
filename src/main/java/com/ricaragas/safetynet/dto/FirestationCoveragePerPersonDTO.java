@@ -2,9 +2,8 @@ package com.ricaragas.safetynet.dto;
 
 import lombok.Data;
 
-@Data
 public class FirestationCoveragePerPersonDTO {
-    private String firstName, lastName;
-    private String address;
-    private String phone;
+    public String firstName, lastName;
+    public String address;
+    public String phone;
 }

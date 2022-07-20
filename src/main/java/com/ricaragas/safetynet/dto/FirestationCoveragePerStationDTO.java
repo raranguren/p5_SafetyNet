@@ -2,10 +2,9 @@ package com.ricaragas.safetynet.dto;
 
 import lombok.Data;
 
-@Data
 public class FirestationCoveragePerStationDTO {
-    private FirestationCoveragePerPersonDTO[] coveredPersons;
-    private long adultsCount;
-    private long childrenCount;
+    public FirestationCoveragePerPersonDTO[] coveredPersons;
+    public long adultsCount;
+    public long childrenCount;
 
 }
