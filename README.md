@@ -5,10 +5,17 @@ A simple API created with Spring Boot for learning purposes.
 1. Reads a static file with fictional details about fire stations, persons and their medical records.
 2. Exposes 3 CRUD endpoints to modify those 3 entities
 3. Exposes additional endpoints for different queries
-4. Does not have persistence (changes are lost after shut down)
+4. Does not have persistence
 
 ### Prerequisites
-- Maven 3
 - Java 11
 
+### Testing
+To generate the coverage report with JaCoCo:
+```
+mvn verify
+```
 
+### API documentation
+After running the application, OpenAPI descriptions are in:
+http://localhost:8080/swagger-ui.html
