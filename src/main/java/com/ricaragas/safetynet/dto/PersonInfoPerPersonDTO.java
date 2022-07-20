@@ -3,8 +3,8 @@ package com.ricaragas.safetynet.dto;
 import lombok.Data;
 
 @Data
-public class PersonInfoPerNameDTO {
-    private String firstName, lastName;
+public class PersonInfoPerPersonDTO {
+    private String lastName;
     private String address;
     private int age;
     private String email;

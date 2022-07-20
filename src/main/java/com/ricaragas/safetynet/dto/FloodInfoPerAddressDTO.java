@@ -9,7 +9,7 @@ public class FloodInfoPerAddressDTO {
 
     @Data
     public static class PersonInfo {
-        private String firstName, lastName;
+        private String lastName;
         private String phone;
         private int age;
         private String[] medications;
