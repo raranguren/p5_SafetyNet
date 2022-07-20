@@ -7,11 +7,10 @@ import lombok.Data;
 
 // Matching structure of the data source in:
 // https://s3-eu-west-1.amazonaws.com/course.oc-static.com/projects/DA+Java+EN/P5+/data.json
-@Data
-public class StartupDataSourceDTO {
+public class JsonDataSourceDTO {
 
-    private Person[] persons;
-    private Firestation[] firestations;
-    private MedicalRecord[] medicalrecords;
+    public Person[] persons;
+    public Firestation[] firestations;
+    public MedicalRecord[] medicalrecords;
 
 }
