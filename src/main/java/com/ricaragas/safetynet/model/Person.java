@@ -2,12 +2,11 @@ package com.ricaragas.safetynet.model;
 
 import lombok.Data;
 
-@Data
 public class Person {
-    private String firstName, lastName;
-    private String address;
-    private String city;
-    private String zip;
-    private String phone;
-    private String email;
+    public String firstName, lastName;
+    public String address;
+    public String city;
+    public String zip;
+    public String phone;
+    public String email;
 }
