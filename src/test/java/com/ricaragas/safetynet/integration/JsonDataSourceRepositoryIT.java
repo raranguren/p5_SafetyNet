@@ -2,24 +2,26 @@ package com.ricaragas.safetynet.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ricaragas.safetynet.repository.JsonDataSourceRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class JsonDataSourceRepositoryIT {
+
+    JsonDataSourceRepository repositoryUnderTest;
 
     @Test
     public void constructor_reads_json() {
         // ARRANGE
         ObjectMapper jsonMapper = new ObjectMapper();
         // ACT
-        var testedRepository = new JsonDataSourceRepository(jsonMapper);
-        var data = testedRepository.getData();
+        repositoryUnderTest = new JsonDataSourceRepository(jsonMapper);
+        var actualData = repositoryUnderTest.getData();
         // ASSERT
-        assertNotNull(data);
-        assertEquals(23, data.persons.length);
-        assertEquals(13, data.firestations.length);
-        assertEquals(23, data.medicalrecords.length);
+        assertNotNull(actualData);
+        assertEquals(23, actualData.persons.length);
+        assertEquals(13, actualData.firestations.length);
+        assertEquals(23, actualData.medicalrecords.length);
     }
 }
