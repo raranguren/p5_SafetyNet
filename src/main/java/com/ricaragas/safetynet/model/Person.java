@@ -1,7 +1,9 @@
 package com.ricaragas.safetynet.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+@AllArgsConstructor
 public class Person {
     public String firstName, lastName;
     public String address;
