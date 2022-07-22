@@ -3,8 +3,6 @@ package com.ricaragas.safetynet.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ricaragas.safetynet.dto.JsonDataSourceDTO;
-import com.ricaragas.safetynet.model.MedicalRecord;
-import com.ricaragas.safetynet.model.Person;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
@@ -26,9 +24,6 @@ public class JsonDataSourceRepository {
             var url = new URL(DATA_URL);
             data = jsonMapper.readValue(url, JsonDataSourceDTO.class);
             log.info("Data retrieved from JSON file");
-        } catch (MalformedURLException e) {
-            log.fatal("Incorrect URL: " + DATA_URL);
-            throw new RuntimeException("Incorrect URL for data source.");
         } catch (IOException e) {
             log.fatal("Could not read JSON file: " + DATA_URL);
             throw new RuntimeException("Could not initialize data structure");
