@@ -19,11 +19,11 @@ public class JsonDataSourceRepositoryIT {
         // ARRANGE
         String address = JsonDataSourceRepository.DATA_URL;
         URL url = new URL(address);
-        InetAddress inetAddress = InetAddress.getByName(url.getHost());
+        ObjectMapper mapper = new ObjectMapper();
         // ACT
-        boolean isReachable = inetAddress.isReachable(60);
+        var tree = mapper.readTree(url);
         // ASSERT
-        assertTrue(isReachable);
+        assertNotNull(tree);
     }
 
     @Test
