@@ -11,9 +11,17 @@ A simple API created with Spring Boot for learning purposes.
 - Java 11
 
 ### Testing
-To generate the coverage report with JaCoCo:
+To generate the test coverage reports, run:
 ```
-mvn verify
+mvn test
+```
+The following routes are generated in the project:
+- `target/site/surefire-report.html`
+- `target/site/jacoco/index.html`
+
+For additional CSS formatting for the SureFire report, run:
+```
+mvn site 
 ```
 
 ### API documentation
