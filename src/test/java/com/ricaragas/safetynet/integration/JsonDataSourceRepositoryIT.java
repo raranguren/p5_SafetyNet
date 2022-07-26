@@ -35,8 +35,8 @@ public class JsonDataSourceRepositoryIT {
         var actualData = repositoryUnderTest.getData();
         // ASSERT
         assertNotNull(actualData);
-        assertEquals(23, actualData.persons.length);
-        assertEquals(13, actualData.firestations.length);
-        assertEquals(23, actualData.medicalrecords.length);
+        assertEquals(23, actualData.persons.size());
+        assertEquals(13, actualData.firestations.size());
+        assertEquals(23, actualData.medicalrecords.size());
     }
 }

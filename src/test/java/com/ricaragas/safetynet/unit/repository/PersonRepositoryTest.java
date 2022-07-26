@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,7 +39,8 @@ public class PersonRepositoryTest {
     @BeforeEach
     public void before_each() throws IOException {
         var mockDTO = new JsonDataSourceDTO();
-        mockDTO.persons = new Person[]{personA};
+        mockDTO.persons = new ArrayList<>();
+        mockDTO.persons.add(personA);
         when(jsonMapper.readValue(any(URL.class),eq(JsonDataSourceDTO.class))).thenReturn(mockDTO);
         repository = new PersonRepository(jsonMapper);
     }

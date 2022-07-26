@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,7 +45,8 @@ public class FirestationRepositoryTest {
     @BeforeEach
     public void before_each() throws IOException {
         var mockDTO = new JsonDataSourceDTO();
-        mockDTO.firestations = new Firestation[]{firestationA};
+        mockDTO.firestations = new ArrayList<>();
+        mockDTO.firestations.add(firestationA);
         when(jsonMapper.readValue(any(URL.class),eq(JsonDataSourceDTO.class))).thenReturn(mockDTO);
         repository = new FirestationRepository(jsonMapper);
     }

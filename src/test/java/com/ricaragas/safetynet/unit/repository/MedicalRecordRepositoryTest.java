@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,8 +32,8 @@ public class MedicalRecordRepositoryTest {
     ObjectMapper jsonMapper;
 
     // sample data
-    String[] medications = {};
-    String[] allergies = {};
+    ArrayList<String> medications = new ArrayList<>();
+    ArrayList<String> allergies = new ArrayList<>();
     MedicalRecord recordA = new MedicalRecord("Ada", "Ab", "11/1/2011", medications, allergies);
     MedicalRecord recordB = new MedicalRecord("Bea", "Bec", "22/2/2022", medications, allergies);
 
@@ -41,7 +42,8 @@ public class MedicalRecordRepositoryTest {
     @BeforeEach
     public void before_each() throws IOException {
         var mockDTO = new JsonDataSourceDTO();
-        mockDTO.medicalrecords = new MedicalRecord[]{recordA};
+        mockDTO.medicalrecords = new ArrayList<>();
+        mockDTO.medicalrecords.add(recordA);
         when(jsonMapper.readValue(any(URL.class),eq(JsonDataSourceDTO.class))).thenReturn(mockDTO);
         repository = new MedicalRecordRepository(jsonMapper);
     }

@@ -2,9 +2,11 @@ package com.ricaragas.safetynet.dto;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+
 public class FloodInfoPerAddressDTO {
     public String address;
-    public FloodInfoPerPersonDTO[] persons;
+    public ArrayList<FloodInfoPerPersonDTO> persons;
 }
 
 

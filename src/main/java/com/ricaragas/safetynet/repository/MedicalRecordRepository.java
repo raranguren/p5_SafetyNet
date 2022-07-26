@@ -18,7 +18,7 @@ public class MedicalRecordRepository extends JsonDataSourceRepository{
 
     public MedicalRecordRepository(ObjectMapper jsonMapper) {
         super(jsonMapper);
-        medicalRecords = new ArrayList<>(asList(getData().medicalrecords));
+        medicalRecords = getData().medicalrecords;
         log.info("Count of records: " + medicalRecords.size());
     }
 

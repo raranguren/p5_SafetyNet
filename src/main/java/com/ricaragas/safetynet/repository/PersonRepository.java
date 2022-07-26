@@ -18,7 +18,7 @@ public class PersonRepository extends JsonDataSourceRepository{
 
     public PersonRepository(ObjectMapper jsonMapper) {
         super(jsonMapper);
-        persons = new ArrayList<>(asList(getData().persons));
+        persons = getData().persons;
         log.info("Count of records: " + persons.size());
     }
 
