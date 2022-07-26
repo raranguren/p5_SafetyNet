@@ -1,0 +1,15 @@
+package com.ricaragas.safetynet.controller;
+
+import com.ricaragas.safetynet.service.PersonService;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@Log4j2
+public class PersonController {
+
+    private PersonService personService;
+    PersonController(PersonService personService) {
+        this.personService = personService;
+    }
+}
