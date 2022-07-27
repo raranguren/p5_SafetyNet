@@ -21,21 +21,29 @@ public class FirestationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestBody Firestation firestation) throws AlreadyExistsException {
+        log.info("Handling POST request . . .");
         firestationService.create(firestation);
+        log.info("Object created successfully. Returning status 201. (Ok)");
     }
 
     @PutMapping
     public void update(@RequestBody Firestation firestation) throws NotFoundException {
+        log.info("Handling PUT request . . .");
         firestationService.update(firestation);
+        log.info("Object updated successfully. Returning status 200 (Ok).");
     }
 
     @DeleteMapping
     public void delete(@RequestBody Firestation firestation) throws NotFoundException {
+        log.info("Handling DELETE request . . .");
         firestationService.delete(firestation);
+        log.info("Object deleted successfully. Returning status 200 (Ok).");
     }
 
     @ExceptionHandler({AlreadyExistsException.class, NotFoundException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public void handleConflict(){}
+    public void handleConflict(){
+        log.info("Action not possible. Returning status 409 (Conflict).");
+    }
 
 }
