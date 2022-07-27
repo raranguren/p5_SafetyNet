@@ -18,8 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -133,6 +132,18 @@ public class PersonRepositoryTest {
         Executable action = () -> repository.delete(firstName, lastName);
         // ASSERT
         assertThrows(NotFoundException.class, action);
+    }
+
+    @Test
+    public void when_find_by_address_then_values() throws Exception {
+        // ARRANGE
+        String address = personA.address;
+        // ACT
+        var result = repository.findAllByAddress(address);
+        // ASSERT
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(personA, result.get(0));
     }
 
 }

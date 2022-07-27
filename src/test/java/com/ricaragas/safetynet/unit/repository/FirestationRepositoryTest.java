@@ -20,8 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -159,4 +158,26 @@ public class FirestationRepositoryTest {
         // ASSERT
         assertEquals(stationB, result);
     }
+
+    @Test
+    public void when_read_by_station_number_then_value() {
+        // ARRANGE
+        Firestation firestation = firestationA;
+        // ACT
+        var result = repository.getAddressesByStationNumber(firestation.station);
+        // ASSERT
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void when_read_by_station_number_then_empty() {
+        // ARRANGE
+        Firestation firestation = firestationB;
+        // ACT
+        var result = repository.getAddressesByStationNumber(firestation.station);
+        // ASSERT
+        assertNotNull(result);
+        assertEquals(0, result.size());
+    }
+
 }

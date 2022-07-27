@@ -1,10 +1,14 @@
 package com.ricaragas.safetynet.controller;
 
 import com.ricaragas.safetynet.dto.*;
+import com.ricaragas.safetynet.service.FirestationService;
+import com.ricaragas.safetynet.service.PersonService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
@@ -14,11 +18,18 @@ import java.util.ArrayList;
 @RequestMapping("/")
 public class RootController {
 
+    private final FirestationService firestationService;
+    private final PersonService personService;
+    RootController(FirestationService firestationService, PersonService personService) {
+        this.firestationService = firestationService;
+        this.personService = personService;
+    }
+
     @GetMapping("firestation")
     public FirestationCoveragePerStationDTO firestation(@PathParam("stationNumber") String stationNumber) {
         log.info("Received GET /firestation?stationNumber={} . . .", stationNumber);
-        var result = new FirestationCoveragePerStationDTO();
-        // TODO
+        if (stationNumber == null) throwBadRequest();
+        var result = firestationService.getCoverageReportByStationNumber(stationNumber);
         log.info("Returning result with status 200 (Ok).");
         return result;
     }
@@ -77,4 +88,10 @@ public class RootController {
         return result;
     }
 
+    // UTILS
+
+    private void throwBadRequest() {
+        log.info("Returning status 400 (Bad request)");
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
 }

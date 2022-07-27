@@ -68,8 +68,23 @@ public class FirestationRepository extends JsonDataSourceRepository{
         firestations.remove(address);
     }
 
+    // UTILS
+
     public void deleteAllByStation(String station) {
         firestations.values().removeIf(value -> value.equals(station));
+    }
+
+    // OTHER QUERIES
+
+    public ArrayList<String> getAddressesByStationNumber(String stationNumber) {
+        ArrayList<String> addresses = new ArrayList<>();
+        firestations.forEach((address, station) -> {
+            if (station.equals(stationNumber)) {
+                addresses.add(address);
+            }
+        });
+        log.info("Found {} addresses covered by station number ", stationNumber);
+        return addresses;
     }
 
 }

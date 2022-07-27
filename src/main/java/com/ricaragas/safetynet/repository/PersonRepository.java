@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
@@ -83,5 +84,16 @@ public class PersonRepository extends JsonDataSourceRepository{
 
     private Optional<Integer> indexOf(Person person) {
         return indexOf(person.firstName, person.lastName);
+    }
+
+    // OTHER QUERIES
+
+    public ArrayList<Person> findAllByAddress(String address) {
+        ArrayList<Person> result = new ArrayList<>();
+        for (Person person : persons) {
+            if (person.address.equals(address)) result.add(person);
+        }
+        log.info("Found {} persons with address {}.", result.size(), address);
+        return result;
     }
 }

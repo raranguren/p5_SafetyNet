@@ -12,8 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -31,6 +34,7 @@ public class MedicalRecordServiceTest {
     // Two objects with the same values to verify that the service calls the repository
     MedicalRecord preparedValue = new MedicalRecord("AAA","BBB","01/01/2001",new ArrayList<>(), new ArrayList<>());
     MedicalRecord expectedValue = new MedicalRecord("AAA","BBB","01/01/2001",new ArrayList<>(), new ArrayList<>());
+    LocalDate expectedBirthdate = LocalDate.of(2001,1,1);
 
     @Test
     public void when_create_then_success() throws Exception {
@@ -88,6 +92,27 @@ public class MedicalRecordServiceTest {
         Executable action = () -> service.delete(preparedValue);
         // ASSERT
         assertThrows(NotFoundException.class, action);
+    }
+
+    @Test
+    public void when_get_birthdate_then_valid_date() throws Exception {
+        when(repository.read(anyString(), anyString())).thenReturn(Optional.of(expectedValue));
+        // ARRANGE
+        var result = service.getBirthdateByName(preparedValue.firstName, preparedValue.lastName);
+        // ASSERT
+        verify(repository, times(1))
+                .read(expectedValue.firstName, expectedValue.lastName);
+        assertEquals(expectedBirthdate, result.get());
+    }
+
+    @Test
+    public void when_get_birthdate_then_empty() throws Exception {
+        // ARRANGE
+        when(repository.read(anyString(), anyString())).thenReturn(Optional.empty());
+        // ACT
+        var result = service.getBirthdateByName(preparedValue.firstName, preparedValue.lastName);
+        // ASSERT
+        assert(result.isEmpty());
     }
 
 }

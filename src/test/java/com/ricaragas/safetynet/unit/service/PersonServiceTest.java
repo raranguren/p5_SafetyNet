@@ -4,6 +4,7 @@ import com.ricaragas.safetynet.model.Person;
 import com.ricaragas.safetynet.repository.AlreadyExistsException;
 import com.ricaragas.safetynet.repository.NotFoundException;
 import com.ricaragas.safetynet.repository.PersonRepository;
+import com.ricaragas.safetynet.service.MedicalRecordService;
 import com.ricaragas.safetynet.service.PersonService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -20,12 +26,14 @@ import static org.mockito.Mockito.*;
 public class PersonServiceTest {
 
     @InjectMocks
-    private PersonService service;
+    private PersonService personService;
 
     @Mock
     private PersonRepository repository;
+    @Mock
+    private MedicalRecordService medicalRecordService;
 
-    // Two objects with the same values to verify that the service calls the repository
+    // Objects with the same values to verify that the service calls the repository
     Person preparedValue = new Person("AAA","BBB","cc","dd","123","234","a@1.c");
     Person expectedValue = new Person("AAA","BBB","cc","dd","123","234","a@1.c");
 
@@ -33,7 +41,7 @@ public class PersonServiceTest {
     public void when_create_then_success() throws Exception {
         // ARRANGE
         // ACT
-        service.create(preparedValue);
+        personService.create(preparedValue);
         // ASSERT
         verify(repository, times(1)).create(expectedValue);
     }
@@ -43,7 +51,7 @@ public class PersonServiceTest {
         // ARRANGE
         doThrow(AlreadyExistsException.class).when(repository).create(any());
         // ACT
-        Executable action = () -> service.create(preparedValue);
+        Executable action = () -> personService.create(preparedValue);
         // ASSERT
         assertThrows(AlreadyExistsException.class, action);
     }
@@ -52,7 +60,7 @@ public class PersonServiceTest {
     public void when_update_then_success() throws Exception {
         // ARRANGE
         // ACT
-        service.update(preparedValue);
+        personService.update(preparedValue);
         // ASSERT
         verify(repository, times(1)).update(expectedValue);
     }
@@ -62,7 +70,7 @@ public class PersonServiceTest {
         // ARRANGE
         doThrow(NotFoundException.class).when(repository).update(any());
         // ACT
-        Executable action = () -> service.update(preparedValue);
+        Executable action = () -> personService.update(preparedValue);
         // ASSERT
         assertThrows(NotFoundException.class, action);
     }
@@ -71,7 +79,7 @@ public class PersonServiceTest {
     public void when_delete_then_success() throws Exception {
         // ARRANGE
         // ACT
-        service.delete(preparedValue);
+        personService.delete(preparedValue);
         // ASSERT
         verify(repository, times(1))
                 .delete(expectedValue.firstName, expectedValue.lastName);
@@ -82,9 +90,39 @@ public class PersonServiceTest {
         // ARRANGE
         doThrow(NotFoundException.class).when(repository).delete(anyString(), anyString());
         // ACT
-        Executable action = () -> service.delete(preparedValue);
+        Executable action = () -> personService.delete(preparedValue);
         // ASSERT
         assertThrows(NotFoundException.class, action);
+    }
+
+    @Test
+    public void when_coverage_report_then_success() {
+        // ARRANGE
+        ArrayList<Person> persons = new ArrayList<>(List.of(preparedValue));
+        LocalDate tenYearsAgo = LocalDate.now().minusYears(10);
+        when(medicalRecordService.getBirthdateByName(any(),any()))
+                .thenReturn(Optional.of(tenYearsAgo));
+        // ACT
+        var result = personService.getCoverageReportFromPersonList(persons);
+        var resultPersonInfo = result.coveredPersons.get(0);
+        // ASSERT
+        assertEquals(1, result.childrenCount);
+        assertEquals(0, result.adultsCount);
+        assertEquals(1, result.coveredPersons.size());
+        assertEquals(expectedValue.firstName, resultPersonInfo.firstName);
+        assertEquals(expectedValue.lastName, resultPersonInfo.lastName);
+        assertEquals(expectedValue.address, resultPersonInfo.address);
+        assertEquals(expectedValue.phone, resultPersonInfo.phone);
+    }
+
+    @Test
+    public void when_get_persons_by_address_then_success() {
+        // ARRANGE
+        // ACT
+        var result = personService.getPersonsByAddress("123abc");
+        // ASSERT
+        verify(repository).findAllByAddress(eq("123abc"));
+        assertNotNull(result);
     }
 
 }
