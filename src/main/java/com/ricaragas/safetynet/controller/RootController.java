@@ -16,7 +16,7 @@ public class RootController {
 
     @GetMapping("firestation")
     public FirestationCoveragePerStationDTO firestation(@PathParam("stationNumber") String stationNumber) {
-        log.info("Received GET request for the coverage of firestation number " + stationNumber + " . . .");
+        log.info("Received GET /firestation?stationNumber={} . . .", stationNumber);
         var result = new FirestationCoveragePerStationDTO();
         // TODO
         log.info("Returning result with status 200 (Ok).");
@@ -25,25 +25,25 @@ public class RootController {
 
     @GetMapping("childAlert")
     public Iterable<ChildAlertPerChildDTO> childAlert(@PathParam("address") String address) {
-        log.info("Received GET request for the list of children in address " + address + " . . .");
+        log.info("Received GET /childAlert?address={} . . .", address);
         ArrayList<ChildAlertPerChildDTO> result = new ArrayList<>();
         // TODO
-        log.info("Returning " + result.size() + " results with status 200 (Ok).");
+        log.info("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }
 
     @GetMapping("phoneAlert")
     public Iterable<String> phoneAlert(@PathParam("firestation") String stationNumber) {
-        log.info("Received GET request for all phone numbers covered by station " + stationNumber + " . . .");
+        log.info("Received GET /phoneAlert/firestation={} . . .", stationNumber);
         ArrayList<String> result = new ArrayList<>();
         // TODO
-        log.info("Returning " + result.size() + " results with status 200 (Ok).");
+        log.info("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }
 
     @GetMapping("fire")
     public FireAlertPerAddressDTO fire(@PathParam("address") String address) {
-        log.info("Received GET request for the fire alert information for address " + address + " . . . ");
+        log.info("Received GET /fire?address={} . . . ", address);
         var result = new FireAlertPerAddressDTO();
         // TODO
         log.info("Returning result with status 200 (Ok).");
@@ -52,16 +52,16 @@ public class RootController {
 
     @GetMapping("flood")
     public Iterable<FloodInfoPerAddressDTO> flood(@PathParam("stations") ArrayList<String> stationNumbers) {
-        log.info("Received GET request for the flood alert information for " + stationNumbers.size() + " stations");
+        log.info("Received GET /flood?stations={}", stationNumbers);
         ArrayList<FloodInfoPerAddressDTO> result = new ArrayList<>();
         // TODO
-        log.info("Returning " + result.size() + " results with status 200 (Ok).");
+        log.info("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }
 
     @GetMapping("personInfo")
     public PersonInfoPerPersonDTO personInfo(@PathParam("firstName") String firstName, @PathParam("lastName") String lastName) {
-        log.info("Received GET request for information about the person with name " + firstName + " " + lastName + " . . .");
+        log.info("Received GET /personInfo?firstName={}&lastName={} . . .", firstName, lastName);
         var result = new PersonInfoPerPersonDTO();
         // TODO
         log.info("Returning result with status 200 (Ok).");
@@ -70,10 +70,10 @@ public class RootController {
 
     @GetMapping("communityEmail")
     public Iterable<String> communityEmail(@PathParam("city") String city) {
-        log.info("Received GET request for the list of emails in city " + city + " . . .");
+        log.info("Received GET /communityEmail?city={} . . .", city);
         ArrayList<String> result = new ArrayList<>();
         // TODO
-        log.info("Returning " + result.size() + " results with status 200 (Ok).");
+        log.info("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }
 
