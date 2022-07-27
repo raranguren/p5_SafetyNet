@@ -17,14 +17,17 @@ public class FirestationService {
     }
 
     public void create(Firestation firestation) throws AlreadyExistsException {
+        log.info("Forwarding to repository . . .");
         firestationRepository.create(firestation);
     }
 
     public void update(Firestation firestation) throws NotFoundException {
+        log.info("Forwarding to repository . . .");
         firestationRepository.update(firestation);
     }
 
     public void delete(Firestation firestation) throws NotFoundException {
+        log.info("Forwarding to repository . . .");
         firestationRepository.delete(firestation.address);
     }
 

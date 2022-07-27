@@ -17,14 +17,17 @@ public class PersonService {
     }
 
     public void create(Person person) throws AlreadyExistsException {
+        log.info("Forwarding to repository . . .");
         personRepository.create(person);
     }
 
     public void update(Person person) throws NotFoundException {
+        log.info("Forwarding to repository . . .");
         personRepository.update(person);
     }
 
     public void delete(Person person) throws NotFoundException {
+        log.info("Forwarding to repository . . .");
         personRepository.delete(person.firstName, person.lastName);
     }
 }
