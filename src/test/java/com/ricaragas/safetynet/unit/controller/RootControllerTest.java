@@ -15,13 +15,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @WebMvcTest(controllers = RootController.class)
@@ -44,12 +44,26 @@ public class RootControllerTest {
         // ARRANGE
         String stationNumber = "1";
         var response = new FirestationCoveragePerStationDTO();
-        when(firestationService.getCoverageReportByStationNumber(anyString())).thenReturn(response);
+        when(firestationService.getCoverageReportByStationNumber(anyString()))
+                .thenReturn(Optional.of(response));
         // ACT
         mockMvc.perform(get("/firestation")
                 .param("stationNumber", stationNumber))
                 // ASSERT
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void get_firestation_coverage_and_station_not_found_then_empty_json() throws Exception {
+        // ARRANGE
+        when(firestationService.getCoverageReportByStationNumber(anyString()))
+                .thenReturn(Optional.empty());
+        // ACT
+        mockMvc.perform(get("/firestation")
+                .param("stationNumber", anyString()))
+                // ASSERT
+                .andExpect(status().isOk())
+                .andExpect(content().json("{}"));
     }
 
     @Test
@@ -75,6 +89,18 @@ public class RootControllerTest {
                 // ASSERT
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.*", hasSize(2)));
+    }
+
+    @Test
+    public void get_child_alert_when_address_not_found_then_empty_list() throws Exception {
+        // ARRANGE
+        when(personService.getChildAlertsByAddress(anyString())).thenReturn(new ArrayList<>());
+        // ACT
+        mockMvc.perform(get("/childAlert")
+                .param("address", "XXX"))
+                // ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(0)));
     }
 
     @Test

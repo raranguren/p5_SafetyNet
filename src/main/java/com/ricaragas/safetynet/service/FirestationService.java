@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -37,15 +38,19 @@ public class FirestationService {
         firestationRepository.delete(firestation.address);
     }
 
-    public FirestationCoveragePerStationDTO getCoverageReportByStationNumber(String stationNumber) {
+    public Optional<FirestationCoveragePerStationDTO> getCoverageReportByStationNumber(String stationNumber) {
         log.info("Building report of coverage for station number {} . . .", stationNumber);
         ArrayList<String> addresses = firestationRepository.getAddressesByStationNumber(stationNumber);
+        if (addresses.isEmpty()) {
+            log.info("No stations found. Returning empty result.");
+            return Optional.empty();
+        }
         ArrayList<Person> persons = new ArrayList<>();
         for (String address : addresses) {
             persons.addAll(personService.getPersonsByAddress(address));
         }
         FirestationCoveragePerStationDTO result = personService.getCoverageReportFromPersonList(persons);
-        return result;
+        return Optional.of(result);
     }
 
 }
