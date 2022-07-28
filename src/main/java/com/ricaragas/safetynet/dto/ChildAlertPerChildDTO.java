@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 public class ChildAlertPerChildDTO {
     public String firstName, lastName;
-    public int age;
+    public Integer age;
     public ArrayList<ChildAlertPerPersonDTO> otherResidents;
 }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class FirestationCoveragePerStationDTO {
     public ArrayList<FirestationCoveragePerPersonDTO> coveredPersons;
-    public long adultsCount;
-    public long childrenCount;
+    public Integer adultsCount;
+    public Integer childrenCount;
 
 }
