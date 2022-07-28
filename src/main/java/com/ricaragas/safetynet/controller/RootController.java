@@ -67,8 +67,8 @@ public class RootController {
     @GetMapping("flood/stations")
     public Iterable<FloodInfoPerAddressDTO> flood(@RequestParam("stations") ArrayList<String> stationNumbers) {
         log.info("Received GET /flood?stations={}", stationNumbers);
-        ArrayList<FloodInfoPerAddressDTO> result = new ArrayList<>();
-        // TODO
+        if (stationNumbers == null || stationNumbers.size() == 0) throwBadRequest();
+        ArrayList<FloodInfoPerAddressDTO> result = firestationService.getFloodInfoByStationNumbers(stationNumbers);
         log.info("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }

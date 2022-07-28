@@ -149,4 +149,34 @@ public class PersonService {
         }
         return residents;
     }
+
+    public Optional<FloodInfoPerAddressDTO> getFloodInfoByAddress(String address) {
+        var persons = personRepository.findAllByAddress(address);
+        if (persons.isEmpty()) {
+            log.info("Skipping address with no persons: " + address);
+            return Optional.empty();
+        }
+
+        var result = new FloodInfoPerAddressDTO();
+        var residents = new ArrayList<FloodInfoPerPersonDTO>();
+        for (Person person : persons) {
+            var resident = new FloodInfoPerPersonDTO();
+            resident.lastName = person.lastName;
+            resident.phone = person.phone;
+            var searchMedicalRecord = medicalRecordService.getByName(person.firstName,person.lastName);
+            if (searchMedicalRecord.isPresent()) {
+                var medicalRecord = searchMedicalRecord.get();
+                resident.allergies = medicalRecord.allergies;
+                resident.medications = medicalRecord.medications;
+            }
+            var age = getAge(person);
+            if (age.isPresent()) {
+                resident.age = age.get();
+            }
+            residents.add(resident);
+        }
+        result.address = address;
+        result.persons = residents;
+        return Optional.of(result);
+    }
 }

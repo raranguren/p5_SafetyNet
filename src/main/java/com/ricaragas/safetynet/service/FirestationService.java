@@ -2,6 +2,7 @@ package com.ricaragas.safetynet.service;
 
 import com.ricaragas.safetynet.dto.FireAlertPerAddressDTO;
 import com.ricaragas.safetynet.dto.FirestationCoveragePerStationDTO;
+import com.ricaragas.safetynet.dto.FloodInfoPerAddressDTO;
 import com.ricaragas.safetynet.model.Firestation;
 import com.ricaragas.safetynet.model.Person;
 import com.ricaragas.safetynet.repository.AlreadyExistsException;
@@ -11,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.TreeSet;
 
@@ -74,5 +76,26 @@ public class FirestationService {
         result.station = station.get();
         result.habitants = personService.getFireAlertsByAddress(address);
         return Optional.of(result);
+    }
+
+    public ArrayList<FloodInfoPerAddressDTO> getFloodInfoByStationNumbers(ArrayList<String> stationNumbers) {
+        var result = new ArrayList<FloodInfoPerAddressDTO>();
+        for (String stationNumber : stationNumbers) {
+            result.addAll(getFloodInfoByStationNumber(stationNumber));
+        }
+        return result;
+    }
+
+    private ArrayList<FloodInfoPerAddressDTO> getFloodInfoByStationNumber(String stationNumber) {
+        var result = new ArrayList<FloodInfoPerAddressDTO>();
+        var addresses = firestationRepository.getAddressesByStationNumber(stationNumber);
+        for (String address : addresses) {
+            var infoForAddress = personService.getFloodInfoByAddress(address);
+            if (infoForAddress.isPresent()) {
+                result.add(infoForAddress.get());
+            }
+        }
+        log.info("Included {} addresses for station number {}", addresses.size(), stationNumber);
+        return result;
     }
 }

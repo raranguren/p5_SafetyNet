@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.isNotNull;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -179,6 +178,28 @@ public class RootControllerTest {
         // ARRANGE
         // ACT
         mockMvc.perform(get("/fire"))
+                // ASSERT
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void get_flood_with_params_then_success() throws Exception {
+        // ARRANGE
+        when(firestationService.getFloodInfoByStationNumbers(any()))
+                .thenReturn(new ArrayList<>());
+        // ACT
+        mockMvc.perform(get("/flood/stations")
+                .param("stations", "1, 2"))
+                // ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(0)));
+    }
+
+    @Test
+    public void get_flood_with_no_param_then_fail() throws Exception {
+        // ARRANGE
+        // ACT
+        mockMvc.perform(get("/flood/stations"))
                 // ASSERT
                 .andExpect(status().isBadRequest());
     }

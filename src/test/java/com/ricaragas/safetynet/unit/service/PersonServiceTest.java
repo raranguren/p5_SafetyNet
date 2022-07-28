@@ -210,4 +210,50 @@ public class PersonServiceTest {
         assertEquals(1, result.size());
     }
 
+    @Test
+    public void when_get_flood_info_by_address_then_success() {
+        // ARRANGE
+        String address = preparedValue.address;
+        var medicalRecord = new MedicalRecord(
+                preparedValue.firstName,
+                preparedValue.lastName,
+                "01/01/2001",
+                new ArrayList<>(),
+                new ArrayList<>());
+        var persons = new ArrayList<>(List.of(preparedValue));
+        when(medicalRecordService.getByName(anyString(),anyString()))
+                .thenReturn(Optional.of(medicalRecord));
+        when(personRepository.findAllByAddress(address))
+                .thenReturn(persons);
+        // ACT
+        var result = personService.getFloodInfoByAddress(address);
+        // ASSERT
+        verify(medicalRecordService, times(1))
+                .getByName(expectedValue.firstName, expectedValue.lastName);
+        verify(personRepository, times(1))
+                .findAllByAddress(expectedValue.address);
+        assertEquals(1, result.get().persons.size());
+        assertEquals(address, result.get().address);
+    }
+
+    @Test
+    public void when_get_flood_info_by_address_and_no_medical_records_then_success() {
+        // ARRANGE
+        String address = preparedValue.address;
+        var persons = new ArrayList<>(List.of(preparedValue));
+        when(medicalRecordService.getByName(anyString(),anyString()))
+                .thenReturn(Optional.empty());
+        when(personRepository.findAllByAddress(address))
+                .thenReturn(persons);
+        // ACT
+        var result = personService.getFloodInfoByAddress(address);
+        // ASSERT
+        verify(medicalRecordService, times(1))
+                .getByName(expectedValue.firstName, expectedValue.lastName);
+        verify(personRepository, times(1))
+                .findAllByAddress(expectedValue.address);
+        assertEquals(1, result.get().persons.size());
+        assertEquals(address, result.get().address);
+    }
+
 }

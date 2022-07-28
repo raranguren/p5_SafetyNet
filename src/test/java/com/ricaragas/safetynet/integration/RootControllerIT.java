@@ -73,4 +73,19 @@ public class RootControllerIT {
                 .andExpect(jsonPath("$.habitants").isArray())
                 .andExpect(jsonPath("$.habitants[0].lastName").isString());
     }
+
+    @Test
+    public void flood_stations() throws Exception {
+        // ARRANGE
+        String stations = "1, 2";
+        // ACT
+        mockMvc.perform(get("/flood/stations")
+                .param("stations",stations))
+                // ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*").isArray())
+                .andExpect(jsonPath("$[0].address").isString())
+                .andExpect(jsonPath("$[0].persons").isArray())
+                .andExpect(jsonPath("$[0].persons[0].age").isNumber());
+    }
 }

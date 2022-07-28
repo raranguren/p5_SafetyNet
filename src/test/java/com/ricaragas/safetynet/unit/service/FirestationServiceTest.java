@@ -1,6 +1,7 @@
 package com.ricaragas.safetynet.unit.service;
 
 import com.ricaragas.safetynet.dto.FirestationCoveragePerStationDTO;
+import com.ricaragas.safetynet.dto.FloodInfoPerAddressDTO;
 import com.ricaragas.safetynet.model.Firestation;
 import com.ricaragas.safetynet.model.Person;
 import com.ricaragas.safetynet.repository.AlreadyExistsException;
@@ -165,6 +166,26 @@ public class FirestationServiceTest {
                 .read(address);
         verify(personService, times(1))
                 .getFireAlertsByAddress(address);
+    }
+
+    @Test
+    public void get_flood_info_by_stations_then_success() throws Exception {
+        // ARRANGE
+        String station = "1";
+        var stations = new ArrayList<>(List.of(station));
+        String address = "123";
+        when(firestationRepository.getAddressesByStationNumber(station))
+                .thenReturn(new ArrayList<>(List.of(address)));
+        when(personService.getFloodInfoByAddress(address))
+                .thenReturn(Optional.of(new FloodInfoPerAddressDTO()));
+        // ACT
+        var result = firestationService.getFloodInfoByStationNumbers(stations);
+        // ASSERT
+        verify(firestationRepository, times(1))
+                .getAddressesByStationNumber(station);
+        verify(personService, times(1))
+                .getFloodInfoByAddress(address);
+        assertEquals(1, result.size());
     }
 
 }
