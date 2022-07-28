@@ -256,4 +256,42 @@ public class PersonServiceTest {
         assertEquals(address, result.get().address);
     }
 
+    @Test
+    public void when_person_info_then_success() {
+        // ARRANGE
+        String firstName = preparedValue.firstName;
+        String lastName = preparedValue.lastName;
+        Person person = preparedValue;
+        Integer age = 30;
+        LocalDate birthDate = LocalDate.now().minusYears(age);
+        var medicalRecord = new MedicalRecord(
+                firstName,
+                lastName,
+                "",
+                new ArrayList<>(List.of("a","b")),
+                new ArrayList<>());
+        when(medicalRecordService.getByName(firstName,lastName))
+                .thenReturn(Optional.of(medicalRecord));
+        when(personRepository.read(firstName, lastName))
+                .thenReturn(Optional.of(person));
+        when(medicalRecordService.getBirthdateByName(firstName, lastName))
+                .thenReturn(Optional.of(birthDate));
+        // ACT
+        var result = personService.getPersonInfo(firstName, lastName);
+        // ASSERT
+        assertEquals(expectedValue.lastName, result.get().lastName);
+        assertEquals(age, result.get().age);
+        assertEquals(2, result.get().medications.size());
+    }
+
+    @Test
+    public void when_person_info_and_person_not_found_then_empty() throws Exception {
+        // ARRANGE
+        when(personRepository.read(any(), any())).thenReturn(Optional.empty());
+        // ACT
+        var result = personService.getPersonInfo(any(), any());
+        // ASSERT
+        assert(result.isEmpty());
+    }
+
 }

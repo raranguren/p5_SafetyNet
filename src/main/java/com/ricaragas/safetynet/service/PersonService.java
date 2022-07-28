@@ -179,4 +179,22 @@ public class PersonService {
         result.persons = residents;
         return Optional.of(result);
     }
+
+    public Optional<PersonInfoPerPersonDTO> getPersonInfo(String firstName, String lastName) {
+        var search = personRepository.read(firstName, lastName);
+        if (search.isEmpty()) return Optional.empty();
+        var person = search.get();
+        var personInfo = new PersonInfoPerPersonDTO();
+        personInfo.lastName = person.lastName;
+        personInfo.address = person.address;
+        personInfo.email = person.email;
+        var searchMedicalRecord = medicalRecordService.getByName(firstName, lastName);
+        if (searchMedicalRecord.isPresent()) {
+            personInfo.allergies = searchMedicalRecord.get().allergies;
+            personInfo.medications = searchMedicalRecord.get().medications;
+            var age = getAge(person);
+            if (age.isPresent()) personInfo.age = age.get();
+        }
+        return Optional.of(personInfo);
+    }
 }

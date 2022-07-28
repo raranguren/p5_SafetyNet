@@ -88,4 +88,19 @@ public class RootControllerIT {
                 .andExpect(jsonPath("$[0].persons").isArray())
                 .andExpect(jsonPath("$[0].persons[0].age").isNumber());
     }
+
+    @Test
+    public void personInfo() throws Exception {
+        // ARRANGE
+        String firstName = "Jacob";
+        String lastName = "Boyd";
+        // ACT
+        mockMvc.perform(get("/personInfo")
+                .param("firstName", firstName)
+                .param("lastName", lastName))
+                // ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lastName").isString())
+                .andExpect(jsonPath("$.allergies").isArray());
+    }
 }

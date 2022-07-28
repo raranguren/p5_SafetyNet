@@ -76,10 +76,10 @@ public class RootController {
     @GetMapping("personInfo")
     public PersonInfoPerPersonDTO personInfo(@RequestParam("firstName") String firstName, @PathParam("lastName") String lastName) {
         log.info("Received GET /personInfo?firstName={}&lastName={} . . .", firstName, lastName);
-        var result = new PersonInfoPerPersonDTO();
-        // TODO bad request if person not found
+        var result = personService.getPersonInfo(firstName, lastName);
+        if (result.isEmpty()) throwBadRequest();
         log.info("Returning result with status 200 (Ok).");
-        return result;
+        return result.get();
     }
 
     @GetMapping("communityEmail")

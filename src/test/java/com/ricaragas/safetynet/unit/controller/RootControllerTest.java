@@ -4,6 +4,7 @@ import com.ricaragas.safetynet.controller.RootController;
 import com.ricaragas.safetynet.dto.ChildAlertPerChildDTO;
 import com.ricaragas.safetynet.dto.FireAlertPerAddressDTO;
 import com.ricaragas.safetynet.dto.FirestationCoveragePerStationDTO;
+import com.ricaragas.safetynet.dto.PersonInfoPerPersonDTO;
 import com.ricaragas.safetynet.service.FirestationService;
 import com.ricaragas.safetynet.service.PersonService;
 import org.junit.jupiter.api.Test;
@@ -200,6 +201,44 @@ public class RootControllerTest {
         // ARRANGE
         // ACT
         mockMvc.perform(get("/flood/stations"))
+                // ASSERT
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void get_person_info_with_params_then_success() throws Exception {
+        // ARRANGE
+        String firstName = "AAA";
+        String lastName = "BBB";
+        var personInfo = new PersonInfoPerPersonDTO();
+        when(personService.getPersonInfo(eq(firstName), eq(lastName)))
+                .thenReturn(Optional.of(personInfo));
+        // ACT
+        mockMvc.perform(get("/personInfo")
+                .param("firstName", firstName)
+                .param("lastName", lastName))
+                // ASSERT
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void get_person_info_and_person_not_found_then_bad_request() throws Exception {
+        // ARRANGE
+        when(personService.getPersonInfo(any(), any()))
+                .thenReturn(Optional.empty());
+        // ACT
+        mockMvc.perform(get("/personInfo")
+                        .param("firstName", anyString())
+                        .param("lastName", anyString()))
+                // ASSERT
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void get_person_info_with_no_params_then_bad_request() throws Exception {
+        // ARRANGE
+        // ACT
+        mockMvc.perform(get("/personInfo"))
                 // ASSERT
                 .andExpect(status().isBadRequest());
     }
