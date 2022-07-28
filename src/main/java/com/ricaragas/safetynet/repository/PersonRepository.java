@@ -96,4 +96,14 @@ public class PersonRepository extends JsonDataSourceRepository{
         log.info("Found {} persons with address {}.", result.size(), address);
         return result;
     }
+
+    public ArrayList<Person> findAllByCity(String city) {
+        ArrayList<Person> result = new ArrayList<>();
+        for (Person person : persons) {
+            if (city.equals(person.city)) result.add(person);
+        }
+        log.info("Found {} persons in city {}.", result.size(), city);
+        return result;
+    }
+
 }

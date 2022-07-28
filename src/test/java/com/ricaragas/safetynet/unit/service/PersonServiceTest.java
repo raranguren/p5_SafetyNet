@@ -294,4 +294,18 @@ public class PersonServiceTest {
         assert(result.isEmpty());
     }
 
+    @Test
+    public void when_community_email_then_success() throws Exception {
+        // ARRANGE
+        String city = preparedValue.city;
+        Person person = preparedValue;
+        when(personRepository.findAllByCity(city))
+                .thenReturn(new ArrayList<>(List.of(person)));
+        // ACT
+        var result = personService.getEmailsByCity(city);
+        // ASSERT
+        assertEquals(expectedValue.email, result.get(0));
+        assertEquals(1, result.size());
+    }
+
 }

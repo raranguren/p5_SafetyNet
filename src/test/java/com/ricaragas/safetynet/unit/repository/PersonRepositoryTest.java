@@ -146,4 +146,16 @@ public class PersonRepositoryTest {
         assertEquals(personA, result.get(0));
     }
 
+    @Test
+    public void when_find_by_city_then_values() throws  Exception {
+        // ARRANGE
+        String city = personA.city;
+        // ACT
+        var result = repository.findAllByCity(city);
+        // ASSERT
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(personA, result.get(0));
+    }
+
 }

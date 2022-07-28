@@ -103,4 +103,17 @@ public class RootControllerIT {
                 .andExpect(jsonPath("$.lastName").isString())
                 .andExpect(jsonPath("$.allergies").isArray());
     }
+
+    @Test
+    public void communityEmail() throws Exception {
+        // ARRANGE
+        String city = "Culver";
+        // ACT
+        mockMvc.perform(get("/communityEmail")
+                .param("city", city))
+                // ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0]").isString());
+    }
 }

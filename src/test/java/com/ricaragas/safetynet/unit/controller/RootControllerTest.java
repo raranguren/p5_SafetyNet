@@ -243,4 +243,28 @@ public class RootControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    public void get_community_email_with_param_then_success() throws Exception {
+        // ARRANGE
+        when(personService.getEmailsByCity(anyString()))
+                .thenReturn(new ArrayList<>(List.of("abc@abc.com")));
+        // ACT
+        mockMvc.perform(get("/communityEmail")
+                .param("city", anyString()))
+                // ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0]").value("abc@abc.com"));
+
+    }
+
+    @Test
+    public void get_community_email_with_no_params_then_bad_request() throws Exception {
+        // ARRANGE
+        // ACT
+        mockMvc.perform(get("/communityEmail"))
+                // ASSERT
+                .andExpect(status().isBadRequest());
+    }
+
 }

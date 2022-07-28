@@ -66,7 +66,7 @@ public class RootController {
 
     @GetMapping("flood/stations")
     public Iterable<FloodInfoPerAddressDTO> flood(@RequestParam("stations") ArrayList<String> stationNumbers) {
-        log.info("Received GET /flood?stations={}", stationNumbers);
+        log.info("Received GET /flood/stations?stations={}", stationNumbers);
         if (stationNumbers == null || stationNumbers.size() == 0) throwBadRequest();
         ArrayList<FloodInfoPerAddressDTO> result = firestationService.getFloodInfoByStationNumbers(stationNumbers);
         log.info("Returning {} results with status 200 (Ok).", result.size());
@@ -85,8 +85,8 @@ public class RootController {
     @GetMapping("communityEmail")
     public Iterable<String> communityEmail(@RequestParam("city") String city) {
         log.info("Received GET /communityEmail?city={} . . .", city);
-        ArrayList<String> result = new ArrayList<>();
-        // TODO bad request if person not found
+        if (city == null) throwBadRequest();
+        ArrayList<String> result = personService.getEmailsByCity(city);
         log.info("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }

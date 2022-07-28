@@ -197,4 +197,14 @@ public class PersonService {
         }
         return Optional.of(personInfo);
     }
+
+    public ArrayList<String> getEmailsByCity(String city) {
+        log.info("Asking repository for emails in city=" + city);
+        var persons = personRepository.findAllByCity(city);
+        var result = new ArrayList<String>();
+        for (Person person : persons) {
+            result.add(person.email);
+        }
+        return result;
+    }
 }
