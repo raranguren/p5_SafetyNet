@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -149,6 +150,21 @@ public class FirestationServiceTest {
         var result = firestationService.getUniquePhoneNumbersByStationNumber(stationNumber);
         // ASSERT
         assertEquals(3, result.size());
+    }
+
+    @Test
+    public void get_fire_alert_by_address_then_success() throws Exception {
+        // ARRANGE
+        String address = "123";
+        when(firestationRepository.read(address)).thenReturn(Optional.of("1"));
+        // ACT
+        var result = firestationService.getFireAlertByAddress(address);
+        // ASSERT
+        assertEquals("1", result.get().station);
+        verify(firestationRepository, times(1))
+                .read(address);
+        verify(personService, times(1))
+                .getFireAlertsByAddress(address);
     }
 
 }

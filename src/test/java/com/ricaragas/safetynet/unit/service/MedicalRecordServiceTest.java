@@ -115,4 +115,16 @@ public class MedicalRecordServiceTest {
         assert(result.isEmpty());
     }
 
+    @Test
+    public void when_read_by_name_then_success() throws Exception {
+        // ARRANGE
+        String firstName = preparedValue.firstName;
+        String lastName = preparedValue.lastName;
+        // ACT
+        var result = service.getByName(firstName, lastName);
+        // ASSERT
+        verify(repository, times(1))
+                .read(firstName, lastName);
+    }
+
 }

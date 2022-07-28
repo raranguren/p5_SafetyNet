@@ -2,6 +2,7 @@ package com.ricaragas.safetynet.unit.controller;
 
 import com.ricaragas.safetynet.controller.RootController;
 import com.ricaragas.safetynet.dto.ChildAlertPerChildDTO;
+import com.ricaragas.safetynet.dto.FireAlertPerAddressDTO;
 import com.ricaragas.safetynet.dto.FirestationCoveragePerStationDTO;
 import com.ricaragas.safetynet.service.FirestationService;
 import com.ricaragas.safetynet.service.PersonService;
@@ -144,6 +145,40 @@ public class RootControllerTest {
         // ARRANGE
         // ACT
         mockMvc.perform(get("/phoneAlert"))
+                // ASSERT
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void get_fire_with_param_then_success() throws Exception {
+        // ARRANGE
+        when(firestationService.getFireAlertByAddress(anyString()))
+                .thenReturn(Optional.of(new FireAlertPerAddressDTO()));
+        // ACT
+        mockMvc.perform(get("/fire")
+                        .param("address", anyString()))
+                //ASSERT
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void get_fire_when_station_does_not_exist_then_empty() throws Exception {
+        // ARRANGE
+        when(firestationService.getFireAlertByAddress(anyString()))
+                .thenReturn(Optional.empty());
+        // ACT
+        mockMvc.perform(get("/fire")
+                        .param("address", anyString()))
+                //ASSERT
+                .andExpect(status().isOk())
+                .andExpect(content().json("{}"));
+    }
+
+    @Test
+    public void get_fire_with_no_param_then_fail() throws Exception {
+        // ARRANGE
+        // ACT
+        mockMvc.perform(get("/fire"))
                 // ASSERT
                 .andExpect(status().isBadRequest());
     }

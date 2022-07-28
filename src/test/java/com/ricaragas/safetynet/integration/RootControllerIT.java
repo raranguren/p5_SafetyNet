@@ -59,4 +59,18 @@ public class RootControllerIT {
                 .andExpect(jsonPath("$.*").isArray())
                 .andExpect(jsonPath("$[0]").isString());
     }
+
+    @Test
+    public void fire() throws Exception {
+        // ARRANGE
+        String address = "1509 Culver St";
+        // ACT
+        mockMvc.perform(get("/fire")
+                .param("address", address))
+                // ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.station").isString())
+                .andExpect(jsonPath("$.habitants").isArray())
+                .andExpect(jsonPath("$.habitants[0].lastName").isString());
+    }
 }

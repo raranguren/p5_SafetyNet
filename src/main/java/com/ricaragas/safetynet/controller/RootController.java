@@ -58,8 +58,8 @@ public class RootController {
     @GetMapping("fire")
     public ResponseEntity<?> fire(@RequestParam("address") String address) {
         log.info("Received GET /fire?address={} . . . ", address);
-        var result = Optional.of(new FireAlertPerAddressDTO());
-        // TODO
+        if (address == null) throwBadRequest();
+        var result = firestationService.getFireAlertByAddress(address);
         log.info("Returning result with status 200 (Ok).");
         return entityWithResultOrEmptyJson(result);
     }

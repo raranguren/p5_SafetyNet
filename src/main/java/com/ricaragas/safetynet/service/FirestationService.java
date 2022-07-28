@@ -1,5 +1,6 @@
 package com.ricaragas.safetynet.service;
 
+import com.ricaragas.safetynet.dto.FireAlertPerAddressDTO;
 import com.ricaragas.safetynet.dto.FirestationCoveragePerStationDTO;
 import com.ricaragas.safetynet.model.Firestation;
 import com.ricaragas.safetynet.model.Person;
@@ -61,5 +62,17 @@ public class FirestationService {
             uniquePhoneNumbers.addAll(personService.getAllPhoneNumbersByAddress(address));
         }
         return new ArrayList<>(uniquePhoneNumbers);
+    }
+
+    public Optional<FireAlertPerAddressDTO> getFireAlertByAddress(String address) {
+        var station = firestationRepository.read(address);
+        if (station.isEmpty()) {
+            log.info("Station with that address not found. Returning empty result.");
+            return Optional.empty();
+        }
+        var result = new FireAlertPerAddressDTO();
+        result.station = station.get();
+        result.habitants = personService.getFireAlertsByAddress(address);
+        return Optional.of(result);
     }
 }

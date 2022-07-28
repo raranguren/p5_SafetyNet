@@ -44,4 +44,9 @@ public class MedicalRecordService {
         LocalDate localDate = LocalDate.parse(birthdate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
         return Optional.of(localDate);
     }
+
+    public Optional<MedicalRecord> getByName(String firstName, String lastName) {
+        return medicalRecordRepository.read(firstName, lastName);
+    }
+
 }

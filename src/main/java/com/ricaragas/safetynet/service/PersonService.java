@@ -1,9 +1,7 @@
 package com.ricaragas.safetynet.service;
 
-import com.ricaragas.safetynet.dto.ChildAlertPerChildDTO;
-import com.ricaragas.safetynet.dto.ChildAlertPerPersonDTO;
-import com.ricaragas.safetynet.dto.FirestationCoveragePerPersonDTO;
-import com.ricaragas.safetynet.dto.FirestationCoveragePerStationDTO;
+import com.ricaragas.safetynet.dto.*;
+import com.ricaragas.safetynet.model.MedicalRecord;
 import com.ricaragas.safetynet.model.Person;
 import com.ricaragas.safetynet.repository.AlreadyExistsException;
 import com.ricaragas.safetynet.repository.NotFoundException;
@@ -82,8 +80,6 @@ public class PersonService {
 
     public boolean isChild(Optional<Integer> age) {
         if (age.isEmpty()) {
-            // assume adult when no age found
-            // because the reports only include the age for children
             log.warn("No date of birth. Assuming that they are not a child.");
             return false;
         }
@@ -131,5 +127,26 @@ public class PersonService {
         }
         log.info("Found {} phone numbers for address {}", phoneNumbers.size(), address);
         return phoneNumbers;
+    }
+
+    public ArrayList<FireAlertPerPersonDTO> getFireAlertsByAddress(String address) {
+        ArrayList<FireAlertPerPersonDTO> residents = new ArrayList<>();
+        for (Person person : getPersonsByAddress(address)) {
+            var resident = new FireAlertPerPersonDTO();
+            resident.lastName = person.lastName;
+            resident.phone = person.phone;
+            var searchMedicalRecord = medicalRecordService.getByName(person.firstName,person.lastName);
+            if (searchMedicalRecord.isPresent()) {
+                var medicalRecord = searchMedicalRecord.get();
+                resident.allergies = medicalRecord.allergies;
+                resident.medications = medicalRecord.medications;
+            }
+            var age = getAge(person);
+            if (age.isPresent()) {
+                resident.age = age.get();
+            }
+            residents.add(resident);
+        }
+        return residents;
     }
 }
