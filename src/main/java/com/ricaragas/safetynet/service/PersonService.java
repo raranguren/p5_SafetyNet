@@ -1,5 +1,7 @@
 package com.ricaragas.safetynet.service;
 
+import com.ricaragas.safetynet.dto.ChildAlertPerChildDTO;
+import com.ricaragas.safetynet.dto.ChildAlertPerPersonDTO;
 import com.ricaragas.safetynet.dto.FirestationCoveragePerPersonDTO;
 import com.ricaragas.safetynet.dto.FirestationCoveragePerStationDTO;
 import com.ricaragas.safetynet.model.Person;
@@ -13,6 +15,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -70,11 +73,54 @@ public class PersonService {
     }
 
     public boolean isChild(Person person) {
+        return isChild(getAge(person));
+    }
+
+    public boolean isChild(int age) {
+        return age <= 18; // per project specification, age 18 is to be counted as child
+    }
+
+    public boolean isChild(Optional<Integer> age) {
+        if (age.isEmpty()) {
+            // assume adult when no age found
+            // because the reports only include the age for children
+            log.warn("No date of birth. Assuming that they are not a child.");
+            return false;
+        }
+        return isChild(age.get());
+    }
+
+    public Optional<Integer> getAge(Person person) {
         var birthDateResult = medicalRecordService.getBirthdateByName(person.firstName, person.lastName);
-        if (birthDateResult.isEmpty()) return false;
+        if (birthDateResult.isEmpty()) return Optional.empty();
 
         int age = Period.between(birthDateResult.get(), LocalDate.now()).getYears();
         log.info("AGE: {} {} is {} years old.", person.firstName, person.lastName, age);
-        return age <= 18; // per project specification, age 18 is to be counted as child
+        return Optional.of(age);
+    }
+
+    public ArrayList<ChildAlertPerChildDTO> getChildAlertsByAddress(String address) {
+        var result = new ArrayList<ChildAlertPerChildDTO>();
+        var persons = personRepository.findAllByAddress(address);
+        for (Person person : persons) {
+            Optional<Integer> age = getAge(person);
+            if (age.isPresent() && isChild(age))  {
+                var childAlert = new ChildAlertPerChildDTO();
+                childAlert.age = age.get();
+                childAlert.firstName = person.firstName;
+                childAlert.lastName = person.lastName;
+                childAlert.otherResidents = new ArrayList<>();
+                for (Person otherResident : persons) {
+                    if (!person.equals(otherResident)) {
+                        var residentInfo = new ChildAlertPerPersonDTO();
+                        residentInfo.firstName = otherResident.firstName;
+                        residentInfo.lastName = otherResident.lastName;
+                        childAlert.otherResidents.add(residentInfo);
+                    }
+                }
+                result.add(childAlert);
+            }
+        }
+        return result;
     }
 }

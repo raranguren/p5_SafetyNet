@@ -37,8 +37,8 @@ public class RootController {
     @GetMapping("childAlert")
     public Iterable<ChildAlertPerChildDTO> childAlert(@PathParam("address") String address) {
         log.info("Received GET /childAlert?address={} . . .", address);
-        ArrayList<ChildAlertPerChildDTO> result = new ArrayList<>();
-        // TODO
+        if (address == null) throwBadRequest();
+        ArrayList<ChildAlertPerChildDTO> result = personService.getChildAlertsByAddress(address);
         log.info("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }

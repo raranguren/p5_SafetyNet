@@ -125,4 +125,30 @@ public class PersonServiceTest {
         assertNotNull(result);
     }
 
+    @Test
+    public void when_get_child_alerts_by_address_then_success() {
+        // ARRANGE
+        String address = preparedValue.address;
+        Person child = preparedValue;
+        Person adult = new Person("X","Y",address,"","","","");
+        LocalDate childBirthdate = LocalDate.now().minusYears(17);
+        LocalDate adultBirthdate = LocalDate.now().minusYears(19);
+
+        when(repository.findAllByAddress(address))
+                .thenReturn(new ArrayList<>(List.of(child,adult)));
+        when(medicalRecordService.getBirthdateByName(any(),any()))
+                .thenReturn(Optional.of(childBirthdate))
+                .thenReturn(Optional.of(adultBirthdate));
+
+        // ACT
+        var result = personService.getChildAlertsByAddress(address);
+        var resultResidents = result.get(0).otherResidents;
+        // ASSERT
+        assertEquals(1, result.size());
+        assertEquals(1, resultResidents.size());
+        assertEquals(17, result.get(0).age);
+        assertEquals(preparedValue.firstName, result.get(0).firstName);
+        assertEquals(preparedValue.lastName, result.get(0).lastName);
+    }
+
 }
