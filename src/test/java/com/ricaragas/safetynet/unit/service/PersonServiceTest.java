@@ -29,7 +29,7 @@ public class PersonServiceTest {
     private PersonService personService;
 
     @Mock
-    private PersonRepository repository;
+    private PersonRepository personRepository;
     @Mock
     private MedicalRecordService medicalRecordService;
 
@@ -43,13 +43,13 @@ public class PersonServiceTest {
         // ACT
         personService.create(preparedValue);
         // ASSERT
-        verify(repository, times(1)).create(expectedValue);
+        verify(personRepository, times(1)).create(expectedValue);
     }
 
     @Test
     public void when_create_then_fail() throws Exception {
         // ARRANGE
-        doThrow(AlreadyExistsException.class).when(repository).create(any());
+        doThrow(AlreadyExistsException.class).when(personRepository).create(any());
         // ACT
         Executable action = () -> personService.create(preparedValue);
         // ASSERT
@@ -62,13 +62,13 @@ public class PersonServiceTest {
         // ACT
         personService.update(preparedValue);
         // ASSERT
-        verify(repository, times(1)).update(expectedValue);
+        verify(personRepository, times(1)).update(expectedValue);
     }
 
     @Test
     public void when_update_then_fail() throws Exception {
         // ARRANGE
-        doThrow(NotFoundException.class).when(repository).update(any());
+        doThrow(NotFoundException.class).when(personRepository).update(any());
         // ACT
         Executable action = () -> personService.update(preparedValue);
         // ASSERT
@@ -81,14 +81,14 @@ public class PersonServiceTest {
         // ACT
         personService.delete(preparedValue);
         // ASSERT
-        verify(repository, times(1))
+        verify(personRepository, times(1))
                 .delete(expectedValue.firstName, expectedValue.lastName);
     }
 
     @Test
     public void when_delete_then_fail() throws Exception {
         // ARRANGE
-        doThrow(NotFoundException.class).when(repository).delete(anyString(), anyString());
+        doThrow(NotFoundException.class).when(personRepository).delete(anyString(), anyString());
         // ACT
         Executable action = () -> personService.delete(preparedValue);
         // ASSERT
@@ -121,7 +121,7 @@ public class PersonServiceTest {
         // ACT
         var result = personService.getPersonsByAddress("123abc");
         // ASSERT
-        verify(repository).findAllByAddress(eq("123abc"));
+        verify(personRepository).findAllByAddress(eq("123abc"));
         assertNotNull(result);
     }
 
@@ -134,7 +134,7 @@ public class PersonServiceTest {
         LocalDate childBirthdate = LocalDate.now().minusYears(17);
         LocalDate adultBirthdate = LocalDate.now().minusYears(19);
 
-        when(repository.findAllByAddress(address))
+        when(personRepository.findAllByAddress(address))
                 .thenReturn(new ArrayList<>(List.of(child,adult)));
         when(medicalRecordService.getBirthdateByName(any(),any()))
                 .thenReturn(Optional.of(childBirthdate))
@@ -149,6 +149,20 @@ public class PersonServiceTest {
         assertEquals(17, result.get(0).age);
         assertEquals(preparedValue.firstName, result.get(0).firstName);
         assertEquals(preparedValue.lastName, result.get(0).lastName);
+    }
+
+    @Test
+    public void when_get_phone_numbers_by_address_then_success() {
+        // ARRANGE
+        String address = preparedValue.address;
+        var persons = new ArrayList<>(List.of(preparedValue));
+        when(personRepository.findAllByAddress(address))
+                .thenReturn(persons);
+        // ACT
+        var result = personService.getAllPhoneNumbersByAddress(address);
+        // ASSERT
+        assertEquals(expectedValue.phone, result.get(0));
+        assertEquals(1, result.size());
     }
 
 }

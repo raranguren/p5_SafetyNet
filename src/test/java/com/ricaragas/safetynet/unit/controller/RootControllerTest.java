@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -108,6 +109,41 @@ public class RootControllerTest {
         // ARRANGE
         // ACT
         mockMvc.perform(get("/childAlert"))
+                // ASSERT
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void get_phone_alert_with_param_then_success() throws Exception {
+        // ARRANGE
+        when(firestationService.getUniquePhoneNumbersByStationNumber(anyString()))
+                .thenReturn(new ArrayList<>(List.of("111","222","333")));
+        // ACT
+        mockMvc.perform(get("/phoneAlert")
+                .param("firestation", anyString()))
+                //ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(3)));
+    }
+
+    @Test
+    public void get_phone_alert_when_station_not_found_then_empty_list() throws Exception {
+        // ARRANGE
+        when(firestationService.getUniquePhoneNumbersByStationNumber(anyString()))
+                .thenReturn((new ArrayList<>()));
+        // ACT
+        mockMvc.perform(get("/phoneAlert")
+                        .param("firestation", anyString()))
+                // ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(0)));
+    }
+
+    @Test
+    public void get_phone_alert_with_no_param_then_fail() throws Exception {
+        // ARRANGE
+        // ACT
+        mockMvc.perform(get("/phoneAlert"))
                 // ASSERT
                 .andExpect(status().isBadRequest());
     }

@@ -123,4 +123,13 @@ public class PersonService {
         }
         return result;
     }
+
+    public ArrayList<String> getAllPhoneNumbersByAddress(String address) {
+        ArrayList<String> phoneNumbers = new ArrayList<>();
+        for (Person person : getPersonsByAddress(address)) {
+            phoneNumbers.add(person.phone);
+        }
+        log.info("Found {} phone numbers for address {}", phoneNumbers.size(), address);
+        return phoneNumbers;
+    }
 }

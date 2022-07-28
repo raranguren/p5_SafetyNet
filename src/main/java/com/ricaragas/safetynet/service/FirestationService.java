@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.TreeSet;
 
 @Service
 @Log4j2
@@ -53,4 +54,12 @@ public class FirestationService {
         return Optional.of(result);
     }
 
+    public ArrayList<String> getUniquePhoneNumbersByStationNumber(String stationNumber) {
+        ArrayList<String> addresses = firestationRepository.getAddressesByStationNumber(stationNumber);
+        TreeSet<String> uniquePhoneNumbers = new TreeSet<>();
+        for (String address : addresses) {
+            uniquePhoneNumbers.addAll(personService.getAllPhoneNumbersByAddress(address));
+        }
+        return new ArrayList<>(uniquePhoneNumbers);
+    }
 }

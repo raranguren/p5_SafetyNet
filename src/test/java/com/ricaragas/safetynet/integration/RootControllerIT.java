@@ -47,4 +47,16 @@ public class RootControllerIT {
                 .andExpect(jsonPath("$[0].otherResidents[0].firstName").isString());
     }
 
+    @Test
+    public void phoneAlert() throws Exception {
+        // ARRANGE
+        String station = "1";
+        // ACT
+        mockMvc.perform(get("/phoneAlert")
+                .param("firestation", station))
+                // ASSERT
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*").isArray())
+                .andExpect(jsonPath("$[0]").isString());
+    }
 }

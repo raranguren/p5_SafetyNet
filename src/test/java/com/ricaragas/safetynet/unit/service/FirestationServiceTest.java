@@ -1,6 +1,5 @@
 package com.ricaragas.safetynet.unit.service;
 
-import com.ricaragas.safetynet.dto.FirestationCoveragePerPersonDTO;
 import com.ricaragas.safetynet.dto.FirestationCoveragePerStationDTO;
 import com.ricaragas.safetynet.model.Firestation;
 import com.ricaragas.safetynet.model.Person;
@@ -32,7 +31,7 @@ public class FirestationServiceTest {
     private FirestationService firestationService;
 
     @Mock
-    private FirestationRepository repository;
+    private FirestationRepository firestationRepository;
 
     @Mock
     private PersonService personService;
@@ -48,13 +47,13 @@ public class FirestationServiceTest {
         // ACT
         firestationService.create(preparedValue);
         // ASSERT
-        verify(repository, times(1)).create(expectedValue);
+        verify(firestationRepository, times(1)).create(expectedValue);
     }
 
     @Test
     public void when_create_then_fail() throws Exception {
         // ARRANGE
-        doThrow(AlreadyExistsException.class).when(repository).create(any());
+        doThrow(AlreadyExistsException.class).when(firestationRepository).create(any());
         // ACT
         Executable action = () -> firestationService.create(preparedValue);
         // ASSERT
@@ -67,13 +66,13 @@ public class FirestationServiceTest {
         // ACT
         firestationService.update(preparedValue);
         // ASSERT
-        verify(repository, times(1)).update(expectedValue);
+        verify(firestationRepository, times(1)).update(expectedValue);
     }
 
     @Test
     public void when_update_then_fail() throws Exception {
         // ARRANGE
-        doThrow(NotFoundException.class).when(repository).update(any());
+        doThrow(NotFoundException.class).when(firestationRepository).update(any());
         // ACT
         Executable action = () -> firestationService.update(preparedValue);
         // ASSERT
@@ -86,14 +85,14 @@ public class FirestationServiceTest {
         // ACT
         firestationService.delete(preparedValue);
         // ASSERT
-        verify(repository, times(1))
+        verify(firestationRepository, times(1))
                 .delete(expectedValue.address);
     }
 
     @Test
     public void when_delete_then_fail() throws Exception {
         // ARRANGE
-        doThrow(NotFoundException.class).when(repository).delete(anyString());
+        doThrow(NotFoundException.class).when(firestationRepository).delete(anyString());
         // ACT
         Executable action = () -> firestationService.delete(preparedValue);
         // ASSERT
@@ -106,7 +105,7 @@ public class FirestationServiceTest {
         ArrayList<String> addresses = new ArrayList<>(List.of("123abc"));
         ArrayList<Person> persons = new ArrayList<>(List.of(new Person()));
         var report = new FirestationCoveragePerStationDTO();
-        when(repository.getAddressesByStationNumber("1")).thenReturn(addresses);
+        when(firestationRepository.getAddressesByStationNumber("1")).thenReturn(addresses);
         when(personService.getPersonsByAddress("123abc")).thenReturn(persons);
         when(personService.getCoverageReportFromPersonList(any())).thenReturn(report);
         // ACT
@@ -116,6 +115,40 @@ public class FirestationServiceTest {
                 .getPersonsByAddress("123abc");
         verify(personService, times(1))
                 .getCoverageReportFromPersonList(any());
+    }
+
+    @Test
+    public void when_phone_numbers_then_success() throws Exception {
+        // ARRANGE
+        String stationNumber = "1";
+        ArrayList<String> phoneNumbers = new ArrayList<>(List.of("111","222","333"));
+        ArrayList<String> addresses = new ArrayList<>(List.of("rue A"));
+        when(firestationRepository.getAddressesByStationNumber(any()))
+                .thenReturn(addresses);
+        when(personService.getAllPhoneNumbersByAddress(anyString()))
+                .thenReturn(phoneNumbers);
+        // ACT
+        var result = firestationService.getUniquePhoneNumbersByStationNumber(stationNumber);
+        // ASSERT
+        verify(personService, times(1))
+                .getAllPhoneNumbersByAddress(addresses.get(0));
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    public void when_phone_numbers_then_unique_values() throws Exception {
+        // ARRANGE
+        String stationNumber = "1";
+        ArrayList<String> phoneNumbers = new ArrayList<>(List.of("111","222","333","333"));
+        ArrayList<String> addresses = new ArrayList<>(List.of("rue A", "rue B"));
+        when(firestationRepository.getAddressesByStationNumber(any()))
+                .thenReturn(addresses);
+        when(personService.getAllPhoneNumbersByAddress(anyString()))
+                .thenReturn(phoneNumbers);
+        // ACT
+        var result = firestationService.getUniquePhoneNumbersByStationNumber(stationNumber);
+        // ASSERT
+        assertEquals(3, result.size());
     }
 
 }
