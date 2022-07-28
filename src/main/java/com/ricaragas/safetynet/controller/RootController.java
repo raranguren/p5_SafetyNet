@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,7 +29,7 @@ public class RootController {
     }
 
     @GetMapping("firestation")
-    public ResponseEntity<?> firestation(@PathParam("stationNumber") String stationNumber) {
+    public ResponseEntity<?> firestation(@RequestParam("stationNumber") String stationNumber) {
         log.info("Received GET /firestation?stationNumber={} . . .", stationNumber);
         if (stationNumber == null) throwBadRequest();
         var result = firestationService.getCoverageReportByStationNumber(stationNumber);
@@ -37,7 +38,7 @@ public class RootController {
     }
 
     @GetMapping("childAlert")
-    public Iterable<ChildAlertPerChildDTO> childAlert(@PathParam("address") String address) {
+    public Iterable<ChildAlertPerChildDTO> childAlert(@RequestParam("address") String address) {
         log.info("Received GET /childAlert?address={} . . .", address);
         if (address == null) throwBadRequest();
         ArrayList<ChildAlertPerChildDTO> result = personService.getChildAlertsByAddress(address);
@@ -46,16 +47,16 @@ public class RootController {
     }
 
     @GetMapping("phoneAlert")
-    public Iterable<String> phoneAlert(@PathParam("firestation") String stationNumber) {
-        log.info("Received GET /phoneAlert/firestation={} . . .", stationNumber);
-        ArrayList<String> result = new ArrayList<>();
-        // TODO
+    public Iterable<String> phoneAlert(@RequestParam("firestation") String stationNumber) {
+        log.info("Received GET /phoneAlert?firestation={} . . .", stationNumber);
+        if (stationNumber == null) throwBadRequest();
+        ArrayList<String> result = firestationService.getUniquePhoneNumbersByStationNumber(stationNumber);
         log.info("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }
 
     @GetMapping("fire")
-    public ResponseEntity<?> fire(@PathParam("address") String address) {
+    public ResponseEntity<?> fire(@RequestParam("address") String address) {
         log.info("Received GET /fire?address={} . . . ", address);
         var result = Optional.of(new FireAlertPerAddressDTO());
         // TODO
@@ -63,8 +64,8 @@ public class RootController {
         return entityWithResultOrEmptyJson(result);
     }
 
-    @GetMapping("flood")
-    public Iterable<FloodInfoPerAddressDTO> flood(@PathParam("stations") ArrayList<String> stationNumbers) {
+    @GetMapping("flood/stations")
+    public Iterable<FloodInfoPerAddressDTO> flood(@RequestParam("stations") ArrayList<String> stationNumbers) {
         log.info("Received GET /flood?stations={}", stationNumbers);
         ArrayList<FloodInfoPerAddressDTO> result = new ArrayList<>();
         // TODO
@@ -73,7 +74,7 @@ public class RootController {
     }
 
     @GetMapping("personInfo")
-    public PersonInfoPerPersonDTO personInfo(@PathParam("firstName") String firstName, @PathParam("lastName") String lastName) {
+    public PersonInfoPerPersonDTO personInfo(@RequestParam("firstName") String firstName, @PathParam("lastName") String lastName) {
         log.info("Received GET /personInfo?firstName={}&lastName={} . . .", firstName, lastName);
         var result = new PersonInfoPerPersonDTO();
         // TODO bad request if person not found
@@ -82,7 +83,7 @@ public class RootController {
     }
 
     @GetMapping("communityEmail")
-    public Iterable<String> communityEmail(@PathParam("city") String city) {
+    public Iterable<String> communityEmail(@RequestParam("city") String city) {
         log.info("Received GET /communityEmail?city={} . . .", city);
         ArrayList<String> result = new ArrayList<>();
         // TODO bad request if person not found
