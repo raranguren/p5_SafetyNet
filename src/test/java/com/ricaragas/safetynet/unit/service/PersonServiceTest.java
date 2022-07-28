@@ -100,9 +100,12 @@ public class PersonServiceTest {
     public void when_coverage_report_then_success() {
         // ARRANGE
         ArrayList<Person> persons = new ArrayList<>(List.of(preparedValue));
-        LocalDate tenYearsAgo = LocalDate.now().minusYears(10);
-        when(medicalRecordService.getBirthdateByName(any(),any()))
-                .thenReturn(Optional.of(tenYearsAgo));
+        int age = 10;
+        MedicalRecord medicalRecord = new MedicalRecord();
+        when(medicalRecordService.getAge(any()))
+                .thenReturn(Optional.of(age));
+        when(medicalRecordService.getByName(any(), any()))
+                .thenReturn(Optional.of(medicalRecord));
         // ACT
         var result = personService.getCoverageReportFromPersonList(persons);
         var resultPersonInfo = result.coveredPersons.get(0);
@@ -132,14 +135,15 @@ public class PersonServiceTest {
         String address = preparedValue.address;
         Person child = preparedValue;
         Person adult = new Person("X","Y",address,"","","","");
-        LocalDate childBirthdate = LocalDate.now().minusYears(17);
-        LocalDate adultBirthdate = LocalDate.now().minusYears(19);
+        MedicalRecord medicalRecord = new MedicalRecord();
 
         when(personRepository.findAllByAddress(address))
                 .thenReturn(new ArrayList<>(List.of(child,adult)));
-        when(medicalRecordService.getBirthdateByName(any(),any()))
-                .thenReturn(Optional.of(childBirthdate))
-                .thenReturn(Optional.of(adultBirthdate));
+        when(medicalRecordService.getAge(any()))
+                .thenReturn(Optional.of(17))
+                .thenReturn(Optional.of(19));
+        when(medicalRecordService.getByName(any(), any()))
+                .thenReturn(Optional.of(medicalRecord));
 
         // ACT
         var result = personService.getChildAlertsByAddress(address);
@@ -274,8 +278,8 @@ public class PersonServiceTest {
                 .thenReturn(Optional.of(medicalRecord));
         when(personRepository.read(firstName, lastName))
                 .thenReturn(Optional.of(person));
-        when(medicalRecordService.getBirthdateByName(firstName, lastName))
-                .thenReturn(Optional.of(birthDate));
+        when(medicalRecordService.getAge(any()))
+                .thenReturn(Optional.of(age));
         // ACT
         var result = personService.getPersonInfo(firstName, lastName);
         // ASSERT

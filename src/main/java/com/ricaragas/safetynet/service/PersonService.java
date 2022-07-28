@@ -51,7 +51,7 @@ public class PersonService {
         int adultsCount = 0;
         int childrenCount = 0;
         for (Person person : persons) {
-            if (isChild(person)) childrenCount ++;
+            if (isChild(getAge(getMedicalRecord(person)))) childrenCount ++;
             var personProfile = new FirestationCoveragePerPersonDTO();
             personProfile.firstName = person.firstName;
             personProfile.lastName = person.lastName;
@@ -70,36 +70,11 @@ public class PersonService {
         return result;
     }
 
-    public boolean isChild(Person person) {
-        return isChild(getAge(person));
-    }
-
-    public boolean isChild(int age) {
-        return age <= 18; // per project specification, age 18 is to be counted as child
-    }
-
-    public boolean isChild(Optional<Integer> age) {
-        if (age.isEmpty()) {
-            log.warn("No date of birth. Assuming that they are not a child.");
-            return false;
-        }
-        return isChild(age.get());
-    }
-
-    public Optional<Integer> getAge(Person person) {
-        var birthDateResult = medicalRecordService.getBirthdateByName(person.firstName, person.lastName);
-        if (birthDateResult.isEmpty()) return Optional.empty();
-
-        int age = Period.between(birthDateResult.get(), LocalDate.now()).getYears();
-        log.info("AGE: {} {} is {} years old.", person.firstName, person.lastName, age);
-        return Optional.of(age);
-    }
-
     public ArrayList<ChildAlertPerChildDTO> getChildAlertsByAddress(String address) {
         var result = new ArrayList<ChildAlertPerChildDTO>();
         var persons = personRepository.findAllByAddress(address);
         for (Person person : persons) {
-            Optional<Integer> age = getAge(person);
+            Optional<Integer> age = getAge(getMedicalRecord(person));
             if (age.isPresent() && isChild(age))  {
                 var childAlert = new ChildAlertPerChildDTO();
                 childAlert.age = age.get();
@@ -135,15 +110,15 @@ public class PersonService {
             var resident = new FireAlertPerPersonDTO();
             resident.lastName = person.lastName;
             resident.phone = person.phone;
-            var searchMedicalRecord = medicalRecordService.getByName(person.firstName,person.lastName);
+            var searchMedicalRecord = getMedicalRecord(person);
             if (searchMedicalRecord.isPresent()) {
                 var medicalRecord = searchMedicalRecord.get();
                 resident.allergies = medicalRecord.allergies;
                 resident.medications = medicalRecord.medications;
-            }
-            var age = getAge(person);
-            if (age.isPresent()) {
-                resident.age = age.get();
+                var age = getAge(medicalRecord);
+                if (age.isPresent()) {
+                    resident.age = age.get();
+                }
             }
             residents.add(resident);
         }
@@ -163,15 +138,15 @@ public class PersonService {
             var resident = new FloodInfoPerPersonDTO();
             resident.lastName = person.lastName;
             resident.phone = person.phone;
-            var searchMedicalRecord = medicalRecordService.getByName(person.firstName,person.lastName);
+            var searchMedicalRecord = getMedicalRecord(person);
             if (searchMedicalRecord.isPresent()) {
                 var medicalRecord = searchMedicalRecord.get();
                 resident.allergies = medicalRecord.allergies;
                 resident.medications = medicalRecord.medications;
-            }
-            var age = getAge(person);
-            if (age.isPresent()) {
-                resident.age = age.get();
+                var age = getAge(medicalRecord);
+                if (age.isPresent()) {
+                    resident.age = age.get();
+                }
             }
             residents.add(resident);
         }
@@ -192,7 +167,7 @@ public class PersonService {
         if (searchMedicalRecord.isPresent()) {
             personInfo.allergies = searchMedicalRecord.get().allergies;
             personInfo.medications = searchMedicalRecord.get().medications;
-            var age = getAge(person);
+            var age = getAge(getMedicalRecord(person));
             if (age.isPresent()) personInfo.age = age.get();
         }
         return Optional.of(personInfo);
@@ -206,5 +181,32 @@ public class PersonService {
             result.add(person.email);
         }
         return result;
+    }
+
+    // HANDLE AGE CALCULATIONS WHEN MEDICAL RECORDS CAN BE MISSING
+
+    private Optional<MedicalRecord> getMedicalRecord(Person person) {
+        return medicalRecordService.getByName(person.firstName, person.lastName);
+    }
+
+    private Optional<Integer> getAge(MedicalRecord medicalRecord) {
+        return medicalRecordService.getAge(medicalRecord);
+    }
+
+    private Optional<Integer> getAge(Optional<MedicalRecord> medicalRecord) {
+        if (medicalRecord.isEmpty()) return Optional.empty();
+        return getAge(medicalRecord.get());
+    }
+
+    private boolean isChild(int age) {
+        return age <= 18; // per project specification, age 18 is to be counted as child
+    }
+
+    public boolean isChild(Optional<Integer> age) {
+        if (age.isEmpty()) {
+            log.warn("No date of birth. Assuming that they are not a child.");
+            return false;
+        }
+        return isChild(age.get());
     }
 }

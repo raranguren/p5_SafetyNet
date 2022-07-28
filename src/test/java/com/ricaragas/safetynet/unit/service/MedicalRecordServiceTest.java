@@ -95,27 +95,6 @@ public class MedicalRecordServiceTest {
     }
 
     @Test
-    public void when_get_birthdate_then_valid_date() throws Exception {
-        when(repository.read(anyString(), anyString())).thenReturn(Optional.of(expectedValue));
-        // ARRANGE
-        var result = service.getBirthdateByName(preparedValue.firstName, preparedValue.lastName);
-        // ASSERT
-        verify(repository, times(1))
-                .read(expectedValue.firstName, expectedValue.lastName);
-        assertEquals(expectedBirthdate, result.get());
-    }
-
-    @Test
-    public void when_get_birthdate_then_empty() throws Exception {
-        // ARRANGE
-        when(repository.read(anyString(), anyString())).thenReturn(Optional.empty());
-        // ACT
-        var result = service.getBirthdateByName(preparedValue.firstName, preparedValue.lastName);
-        // ASSERT
-        assert(result.isEmpty());
-    }
-
-    @Test
     public void when_read_by_name_then_success() throws Exception {
         // ARRANGE
         String firstName = preparedValue.firstName;

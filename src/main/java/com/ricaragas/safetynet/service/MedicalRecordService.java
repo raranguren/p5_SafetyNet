@@ -8,7 +8,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 @Service
@@ -35,18 +37,21 @@ public class MedicalRecordService {
         medicalRecordRepository.delete(medicalRecord.firstName, medicalRecord.lastName);
     }
 
-    public Optional<LocalDate> getBirthdateByName(String firstName, String lastName) {
-        var search = medicalRecordRepository.read(firstName, lastName);
-        if (search.isEmpty()) return Optional.empty();
-        String birthdate = search.get().birthdate;
-        if (birthdate == null) return Optional.empty();
-
-        LocalDate localDate = LocalDate.parse(birthdate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-        return Optional.of(localDate);
-    }
-
     public Optional<MedicalRecord> getByName(String firstName, String lastName) {
         return medicalRecordRepository.read(firstName, lastName);
+    }
+
+    public Optional<Integer> getAge(MedicalRecord medicalRecord) {
+        String birthdate = medicalRecord.birthdate;
+        if (birthdate == null) return Optional.empty();
+        LocalDate date;
+        try {
+            date = LocalDate.parse(birthdate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+        } catch (DateTimeParseException e) {
+            return Optional.empty();
+        }
+        int age = Period.between(date, LocalDate.now()).getYears();
+        return Optional.of(age);
     }
 
 }
