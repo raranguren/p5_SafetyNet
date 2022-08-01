@@ -1,8 +1,8 @@
 package com.ricaragas.safetynet.unit.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ricaragas.safetynet.dto.JsonDataSourceDTO;
+import com.ricaragas.safetynet.dto.JsonDataDTO;
 import com.ricaragas.safetynet.model.Person;
+import com.ricaragas.safetynet.repository.JsonDataRepository;
 import com.ricaragas.safetynet.repository.PersonRepository;
 import com.ricaragas.safetynet.repository.AlreadyExistsException;
 import com.ricaragas.safetynet.repository.NotFoundException;
@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -27,21 +26,21 @@ import static org.mockito.Mockito.when;
 public class PersonRepositoryTest {
 
     @Mock
-    ObjectMapper jsonMapper;
+    JsonDataRepository jsonDataRepository;
 
     // sample data
     Person personA = new Person("Ada", "Ab", "123 Rue", "Buc", "78000", "123-123", "a@mail.com");
     Person personB = new Person("Bea", "Bec", "23 Rue", "Buc", "78000", "123-123", "a@mail.com");
 
-    private PersonRepository repository;
+    private PersonRepository personRepository;
 
     @BeforeEach
     public void before_each() throws IOException {
-        var mockDTO = new JsonDataSourceDTO();
+        var mockDTO = new JsonDataDTO();
         mockDTO.persons = new ArrayList<>();
         mockDTO.persons.add(personA);
-        when(jsonMapper.readValue(any(URL.class),eq(JsonDataSourceDTO.class))).thenReturn(mockDTO);
-        repository = new PersonRepository(jsonMapper);
+        when(jsonDataRepository.get()).thenReturn(mockDTO);
+        personRepository = new PersonRepository(jsonDataRepository);
     }
 
     @Test
@@ -49,8 +48,8 @@ public class PersonRepositoryTest {
         // ARRANGE
         Person person = personB;
         // ACT
-        repository.create(person);
-        Person result = repository.read(person.firstName, person.lastName).get();
+        personRepository.create(person);
+        Person result = personRepository.read(person.firstName, person.lastName).get();
         // ASSERT
         assertEquals(person, result);
     }
@@ -60,7 +59,7 @@ public class PersonRepositoryTest {
         // ARRANGE
         Person person = personA;
         // ACT
-        Executable action = () -> repository.create(person);
+        Executable action = () -> personRepository.create(person);
         // ASSERT
         assertThrows(AlreadyExistsException.class, action);
     }
@@ -71,7 +70,7 @@ public class PersonRepositoryTest {
         String firstName = personA.firstName;
         String lastName = personA.lastName;
         // ACT
-        Person result = repository.read(firstName,lastName).get();
+        Person result = personRepository.read(firstName,lastName).get();
         // ASSERT
         assertEquals(personA, result);
     }
@@ -82,7 +81,7 @@ public class PersonRepositoryTest {
         String firstName = personB.firstName;
         String lastName = personB.lastName;
         // ACT
-        Optional<Person> result = repository.read(firstName, lastName);
+        Optional<Person> result = personRepository.read(firstName, lastName);
         // ASSERT
         assert(result.isEmpty());
     }
@@ -95,8 +94,8 @@ public class PersonRepositoryTest {
         Person personA_modified = new Person(firstName, lastName,
                 "999 rue","Paris","1000","999-999","m@mail.com");
         // ACT
-        repository.update(personA_modified);
-        Optional<Person> result = repository.read(firstName, lastName);
+        personRepository.update(personA_modified);
+        Optional<Person> result = personRepository.read(firstName, lastName);
         // ASSERT
         assertEquals(personA_modified, result.get());
     }
@@ -106,7 +105,7 @@ public class PersonRepositoryTest {
         // ARRANGE
         Person person = personB;
         // ACT
-        Executable action = () -> repository.update(person);
+        Executable action = () -> personRepository.update(person);
         // ASSERT
         assertThrows(NotFoundException.class, action);
     }
@@ -117,8 +116,8 @@ public class PersonRepositoryTest {
         String firstName = personA.firstName;
         String lastName = personA.lastName;
         // ACT
-        repository.delete(firstName, lastName);
-        Optional<Person> result = repository.read(firstName, lastName);
+        personRepository.delete(firstName, lastName);
+        Optional<Person> result = personRepository.read(firstName, lastName);
         // ASSERT
         assert(result.isEmpty());
     }
@@ -129,7 +128,7 @@ public class PersonRepositoryTest {
         String firstName = personB.firstName;
         String lastName = personB.lastName;
         // ACT
-        Executable action = () -> repository.delete(firstName, lastName);
+        Executable action = () -> personRepository.delete(firstName, lastName);
         // ASSERT
         assertThrows(NotFoundException.class, action);
     }
@@ -139,7 +138,7 @@ public class PersonRepositoryTest {
         // ARRANGE
         String address = personA.address;
         // ACT
-        var result = repository.findAllByAddress(address);
+        var result = personRepository.findAllByAddress(address);
         // ASSERT
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -151,7 +150,7 @@ public class PersonRepositoryTest {
         // ARRANGE
         String city = personA.city;
         // ACT
-        var result = repository.findAllByCity(city);
+        var result = personRepository.findAllByCity(city);
         // ASSERT
         assertNotNull(result);
         assertEquals(1, result.size());

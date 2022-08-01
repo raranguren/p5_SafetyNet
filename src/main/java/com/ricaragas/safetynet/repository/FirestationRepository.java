@@ -1,31 +1,25 @@
 package com.ricaragas.safetynet.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ricaragas.safetynet.model.Firestation;
-import com.ricaragas.safetynet.model.Person;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.ArrayUtils.add;
-import static org.apache.commons.lang3.ArrayUtils.toMap;
 
 @Repository
 @Log4j2
-public class FirestationRepository extends JsonDataSourceRepository{
+public class FirestationRepository {
 
     private final HashMap<String, String> firestations;
 
-    public FirestationRepository(ObjectMapper jsonMapper) {
-        super(jsonMapper);
+    public FirestationRepository(JsonDataRepository jsonDataRepository) {
         firestations = new HashMap<>();
-        for (Firestation firestation : getData().firestations) {
+        for (Firestation firestation : jsonDataRepository.get().firestations) {
             firestations.put(firestation.address, firestation.station);
         }
         log.info("Count of records: " + firestations.size());

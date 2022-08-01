@@ -1,9 +1,8 @@
 package com.ricaragas.safetynet.unit.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ricaragas.safetynet.dto.JsonDataSourceDTO;
+import com.ricaragas.safetynet.dto.JsonDataDTO;
 import com.ricaragas.safetynet.model.MedicalRecord;
-import com.ricaragas.safetynet.model.Person;
+import com.ricaragas.safetynet.repository.JsonDataRepository;
 import com.ricaragas.safetynet.repository.MedicalRecordRepository;
 import com.ricaragas.safetynet.repository.AlreadyExistsException;
 import com.ricaragas.safetynet.repository.NotFoundException;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -29,7 +27,7 @@ import static org.mockito.Mockito.when;
 public class MedicalRecordRepositoryTest {
 
     @Mock
-    ObjectMapper jsonMapper;
+    JsonDataRepository jsonDataRepository;
 
     // sample data
     ArrayList<String> medications = new ArrayList<>();
@@ -37,15 +35,15 @@ public class MedicalRecordRepositoryTest {
     MedicalRecord recordA = new MedicalRecord("Ada", "Ab", "11/1/2011", medications, allergies);
     MedicalRecord recordB = new MedicalRecord("Bea", "Bec", "22/2/2022", medications, allergies);
 
-    private MedicalRecordRepository repository;
+    private MedicalRecordRepository medicalRecordRepository;
 
     @BeforeEach
     public void before_each() throws IOException {
-        var mockDTO = new JsonDataSourceDTO();
+        var mockDTO = new JsonDataDTO();
         mockDTO.medicalrecords = new ArrayList<>();
         mockDTO.medicalrecords.add(recordA);
-        when(jsonMapper.readValue(any(URL.class),eq(JsonDataSourceDTO.class))).thenReturn(mockDTO);
-        repository = new MedicalRecordRepository(jsonMapper);
+        when(jsonDataRepository.get()).thenReturn(mockDTO);
+        medicalRecordRepository = new MedicalRecordRepository(jsonDataRepository);
     }
 
     @Test
@@ -53,8 +51,8 @@ public class MedicalRecordRepositoryTest {
         // ARRANGE
         MedicalRecord record = recordB;
         // ACT
-        repository.create(record);
-        MedicalRecord result = repository.read(record.firstName, record.lastName).get();
+        medicalRecordRepository.create(record);
+        MedicalRecord result = medicalRecordRepository.read(record.firstName, record.lastName).get();
         // ASSERT
         assertEquals(record, result);
     }
@@ -64,7 +62,7 @@ public class MedicalRecordRepositoryTest {
         // ARRANGE
         MedicalRecord record = recordA;
         // ACT
-        Executable action = () -> repository.create(record);
+        Executable action = () -> medicalRecordRepository.create(record);
         // ASSERT
         assertThrows(AlreadyExistsException.class, action);
     }
@@ -75,7 +73,7 @@ public class MedicalRecordRepositoryTest {
         String firstName = recordA.firstName;
         String lastName = recordA.lastName;
         // ACT
-        MedicalRecord result = repository.read(firstName,lastName).get();
+        MedicalRecord result = medicalRecordRepository.read(firstName,lastName).get();
         // ASSERT
         assertEquals(recordA, result);
     }
@@ -86,7 +84,7 @@ public class MedicalRecordRepositoryTest {
         String firstName = recordB.firstName;
         String lastName = recordB.lastName;
         // ACT
-        Optional<MedicalRecord> result = repository.read(firstName, lastName);
+        Optional<MedicalRecord> result = medicalRecordRepository.read(firstName, lastName);
         // ASSERT
         assert(result.isEmpty());
     }
@@ -99,8 +97,8 @@ public class MedicalRecordRepositoryTest {
         MedicalRecord recordA_modified = new MedicalRecord(firstName, lastName,
                 "9/9/2019",medications,allergies);
         // ACT
-        repository.update(recordA_modified);
-        Optional<MedicalRecord> result = repository.read(firstName, lastName);
+        medicalRecordRepository.update(recordA_modified);
+        Optional<MedicalRecord> result = medicalRecordRepository.read(firstName, lastName);
         // ASSERT
         assertEquals(recordA_modified, result.get());
     }
@@ -110,7 +108,7 @@ public class MedicalRecordRepositoryTest {
         // ARRANGE
         MedicalRecord record = recordB;
         // ACT
-        Executable action = () -> repository.update(record);
+        Executable action = () -> medicalRecordRepository.update(record);
         // ASSERT
         assertThrows(NotFoundException.class, action);
     }
@@ -121,8 +119,8 @@ public class MedicalRecordRepositoryTest {
         String firstName = recordA.firstName;
         String lastName = recordA.lastName;
         // ACT
-        repository.delete(firstName, lastName);
-        Optional<MedicalRecord> result = repository.read(firstName, lastName);
+        medicalRecordRepository.delete(firstName, lastName);
+        Optional<MedicalRecord> result = medicalRecordRepository.read(firstName, lastName);
         // ASSERT
         assert(result.isEmpty());
     }
@@ -133,7 +131,7 @@ public class MedicalRecordRepositoryTest {
         String firstName = recordB.firstName;
         String lastName = recordB.lastName;
         // ACT
-        Executable action = () -> repository.delete(firstName, lastName);
+        Executable action = () -> medicalRecordRepository.delete(firstName, lastName);
         // ASSERT
         assertThrows(NotFoundException.class, action);
     }

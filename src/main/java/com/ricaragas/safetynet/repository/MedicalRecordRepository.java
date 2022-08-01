@@ -1,24 +1,21 @@
 package com.ricaragas.safetynet.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ricaragas.safetynet.model.MedicalRecord;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static java.util.Arrays.asList;
-
 @Repository
 @Log4j2
-public class MedicalRecordRepository extends JsonDataSourceRepository{
+public class MedicalRecordRepository {
 
     private final ArrayList<MedicalRecord> medicalRecords;
 
-    public MedicalRecordRepository(ObjectMapper jsonMapper) {
-        super(jsonMapper);
-        medicalRecords = getData().medicalrecords;
+    public MedicalRecordRepository(JsonDataRepository jsonDataRepository) {
+        medicalRecords = jsonDataRepository.get().medicalrecords;
         log.info("Count of records: " + medicalRecords.size());
     }
 

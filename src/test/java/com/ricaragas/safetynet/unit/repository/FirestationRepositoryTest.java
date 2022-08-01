@@ -1,13 +1,11 @@
 package com.ricaragas.safetynet.unit.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ricaragas.safetynet.dto.JsonDataSourceDTO;
+import com.ricaragas.safetynet.dto.JsonDataDTO;
 import com.ricaragas.safetynet.model.Firestation;
-import com.ricaragas.safetynet.model.Person;
 import com.ricaragas.safetynet.repository.AlreadyExistsException;
 import com.ricaragas.safetynet.repository.FirestationRepository;
+import com.ricaragas.safetynet.repository.JsonDataRepository;
 import com.ricaragas.safetynet.repository.NotFoundException;
-import com.ricaragas.safetynet.repository.PersonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -29,7 +26,7 @@ import static org.mockito.Mockito.when;
 public class FirestationRepositoryTest {
 
     @Mock
-    ObjectMapper jsonMapper;
+    JsonDataRepository jsonDataRepository;
 
     // sample data
     String addressA = "123 rue";
@@ -39,15 +36,15 @@ public class FirestationRepositoryTest {
     Firestation firestationA = new Firestation(addressA, stationA);
     Firestation firestationB = new Firestation(addressB, stationB);
 
-    private FirestationRepository repository;
+    private FirestationRepository firestationRepository;
 
     @BeforeEach
     public void before_each() throws IOException {
-        var mockDTO = new JsonDataSourceDTO();
+        var mockDTO = new JsonDataDTO();
         mockDTO.firestations = new ArrayList<>();
         mockDTO.firestations.add(firestationA);
-        when(jsonMapper.readValue(any(URL.class),eq(JsonDataSourceDTO.class))).thenReturn(mockDTO);
-        repository = new FirestationRepository(jsonMapper);
+        when(jsonDataRepository.get()).thenReturn(mockDTO);
+        firestationRepository = new FirestationRepository(jsonDataRepository);
     }
 
     @Test
@@ -55,8 +52,8 @@ public class FirestationRepositoryTest {
         // ARRANGE
         Firestation firestation = firestationB;
         // ACT
-        repository.create(firestation);
-        String result = repository.read(firestation.address).get();
+        firestationRepository.create(firestation);
+        String result = firestationRepository.read(firestation.address).get();
         // ASSERT
         assertEquals(firestation.station, result);
     }
@@ -66,7 +63,7 @@ public class FirestationRepositoryTest {
         // ARRANGE
         Firestation firestation = firestationA;
         // ACT
-        Executable action = () -> repository.create(firestation);
+        Executable action = () -> firestationRepository.create(firestation);
         // ASSERT
         assertThrows(AlreadyExistsException.class, action);
     }
@@ -76,7 +73,7 @@ public class FirestationRepositoryTest {
         // ARRANGE
         Firestation firestation = firestationA;
         // ACT
-        String result = repository.read(firestation.address).get();
+        String result = firestationRepository.read(firestation.address).get();
         // ASSERT
         assertEquals(firestation.station, result);
     }
@@ -86,7 +83,7 @@ public class FirestationRepositoryTest {
         // ARRANGE
         Firestation firestation = firestationB;
         // ACT
-        Optional<String> result = repository.read(firestation.address);
+        Optional<String> result = firestationRepository.read(firestation.address);
         // ASSERT
         assert(result.isEmpty());
     }
@@ -98,8 +95,8 @@ public class FirestationRepositoryTest {
         String newStation = "3";
         Firestation firestationA_modified = new Firestation(address, newStation);
         // ACT
-        repository.update(firestationA_modified);
-        Optional<String> result = repository.read(address);
+        firestationRepository.update(firestationA_modified);
+        Optional<String> result = firestationRepository.read(address);
         // ASSERT
         assertEquals(newStation, result.get());
     }
@@ -109,7 +106,7 @@ public class FirestationRepositoryTest {
         // ARRANGE
         Firestation firestation = firestationB;
         // ACT
-        Executable action = () -> repository.update(firestation);
+        Executable action = () -> firestationRepository.update(firestation);
         // ASSERT
         assertThrows(NotFoundException.class, action);
     }
@@ -119,8 +116,8 @@ public class FirestationRepositoryTest {
         // ARRANGE
         String address = firestationA.address;
         // ACT
-        repository.delete(address);
-        Optional<String> result = repository.read(address);
+        firestationRepository.delete(address);
+        Optional<String> result = firestationRepository.read(address);
         // ASSERT
         assert(result.isEmpty());
     }
@@ -130,7 +127,7 @@ public class FirestationRepositoryTest {
         // ARRANGE
         String address = firestationB.address;
         // ACT
-        Executable action = () -> repository.delete(address);
+        Executable action = () -> firestationRepository.delete(address);
         // ASSERT
         assertThrows(NotFoundException.class, action);
     }
@@ -138,11 +135,11 @@ public class FirestationRepositoryTest {
     @Test
     public void when_delete_by_station_then_success() throws Exception {
         // ARRANGE
-        repository.create(new Firestation(addressB, stationA));
+        firestationRepository.create(new Firestation(addressB, stationA));
         // ACT
-        repository.deleteAllByStation(stationA);
-        Optional<String> resultA = repository.read(addressA);
-        Optional<String> resultB = repository.read(addressB);
+        firestationRepository.deleteAllByStation(stationA);
+        Optional<String> resultA = firestationRepository.read(addressA);
+        Optional<String> resultB = firestationRepository.read(addressB);
         // ASSERT
         assert(resultA.isEmpty());
         assert(resultB.isEmpty());
@@ -151,10 +148,10 @@ public class FirestationRepositoryTest {
     @Test
     public void when_delete_by_station_other_values_remain() throws Exception {
         // ARRANGE
-        repository.create(firestationB);
+        firestationRepository.create(firestationB);
         // ACT
-        repository.deleteAllByStation(stationA);
-        String result = repository.read(addressB).get();
+        firestationRepository.deleteAllByStation(stationA);
+        String result = firestationRepository.read(addressB).get();
         // ASSERT
         assertEquals(stationB, result);
     }
@@ -164,7 +161,7 @@ public class FirestationRepositoryTest {
         // ARRANGE
         Firestation firestation = firestationA;
         // ACT
-        var result = repository.getAddressesByStationNumber(firestation.station);
+        var result = firestationRepository.getAddressesByStationNumber(firestation.station);
         // ASSERT
         assertEquals(1, result.size());
     }
@@ -174,7 +171,7 @@ public class FirestationRepositoryTest {
         // ARRANGE
         Firestation firestation = firestationB;
         // ACT
-        var result = repository.getAddressesByStationNumber(firestation.station);
+        var result = firestationRepository.getAddressesByStationNumber(firestation.station);
         // ASSERT
         assertNotNull(result);
         assertEquals(0, result.size());
