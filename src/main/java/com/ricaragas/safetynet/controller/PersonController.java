@@ -21,29 +21,29 @@ public class PersonController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestBody Person person) throws AlreadyExistsException {
-        log.info("Handling POST request . . .");
+        log.debug("Handling POST request . . .");
         personService.create(person);
-        log.info("Object created successfully. Returning status 201. (Ok)");
+        log.debug("Object created successfully. Returning status 201. (Ok)");
     }
 
     @PutMapping
     public void update(@RequestBody Person person) throws NotFoundException {
-        log.info("Handling PUT request . . .");
+        log.debug("Handling PUT request . . .");
         personService.update(person);
-        log.info("Object updated successfully. Returning status 200 (Ok).");
+        log.debug("Object updated successfully. Returning status 200 (Ok).");
     }
 
     @DeleteMapping
     public void delete(@RequestBody Person person) throws NotFoundException {
-        log.info("Handling DELETE request . . .");
+        log.debug("Handling DELETE request . . .");
         personService.delete(person);
-        log.info("Object deleted successfully. Returning status 200 (Ok).");
+        log.debug("Object deleted successfully. Returning status 200 (Ok).");
     }
 
     @ExceptionHandler({AlreadyExistsException.class, NotFoundException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public void handleConflict(){
-        log.info("Action not possible. Returning status 409 (Conflict).");
+        log.debug("Action not possible. Returning status 409 (Conflict).");
     }
 
 }

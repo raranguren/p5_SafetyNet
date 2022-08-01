@@ -22,7 +22,7 @@ public class FirestationRepository {
         for (Firestation firestation : jsonDataRepository.get().firestations) {
             firestations.put(firestation.address, firestation.station);
         }
-        log.info("Count of records: " + firestations.size());
+        log.debug("Count of records: " + firestations.size());
     }
 
     // CRUD OPERATIONS
@@ -34,12 +34,12 @@ public class FirestationRepository {
             throw new AlreadyExistsException(warning);
         }
         firestations.put(firestation.address, firestation.station);
-        log.info("Created a new record.");
+        log.debug("Created a new record.");
     }
 
     public Optional<String> read(String address) {
         var station = firestations.get(address);
-        log.info(station == null ? "Returning empty result." : "Returning 1 value.");
+        log.debug(station == null ? "Returning empty result." : "Returning 1 value.");
         return Optional.ofNullable(station);
     }
 
@@ -50,7 +50,7 @@ public class FirestationRepository {
             throw new NotFoundException(warning);
         }
         firestations.put(firestation.address, firestation.station);
-        log.info("Updated existing record.");
+        log.debug("Updated existing record.");
     }
 
     public void delete(String address) throws NotFoundException {
@@ -77,7 +77,7 @@ public class FirestationRepository {
                 addresses.add(address);
             }
         });
-        log.info("Found {} addresses covered by station number ", stationNumber);
+        log.debug("Found {} addresses covered by station number ", stationNumber);
         return addresses;
     }
 

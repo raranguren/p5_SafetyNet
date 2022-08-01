@@ -27,22 +27,22 @@ public class PersonService {
     }
 
     public void create(Person person) throws AlreadyExistsException {
-        log.info("Forwarding to repository . . .");
+        log.debug("Forwarding to repository . . .");
         personRepository.create(person);
     }
 
     public void update(Person person) throws NotFoundException {
-        log.info("Forwarding to repository . . .");
+        log.debug("Forwarding to repository . . .");
         personRepository.update(person);
     }
 
     public void delete(Person person) throws NotFoundException {
-        log.info("Forwarding to repository . . .");
+        log.debug("Forwarding to repository . . .");
         personRepository.delete(person.firstName, person.lastName);
     }
 
     public ArrayList<Person> getPersonsByAddress(String address) {
-        log.info("Forwarding to repository . . .");
+        log.debug("Forwarding to repository . . .");
         return personRepository.findAllByAddress(address);
     }
 
@@ -61,7 +61,7 @@ public class PersonService {
         }
         adultsCount = coveredPersons.size() - childrenCount;
 
-        log.info("Creating report with {} adults and {} children . . .", adultsCount, childrenCount);
+        log.debug("Creating report with {} adults and {} children . . .", adultsCount, childrenCount);
         var result = new FirestationCoveragePerStationDTO();
         result.coveredPersons = coveredPersons;
         result.childrenCount = childrenCount;
@@ -100,7 +100,7 @@ public class PersonService {
         for (Person person : getPersonsByAddress(address)) {
             phoneNumbers.add(person.phone);
         }
-        log.info("Found {} phone numbers for address {}", phoneNumbers.size(), address);
+        log.debug("Found {} phone numbers for address {}", phoneNumbers.size(), address);
         return phoneNumbers;
     }
 
@@ -128,7 +128,7 @@ public class PersonService {
     public Optional<FloodInfoPerAddressDTO> getFloodInfoByAddress(String address) {
         var persons = personRepository.findAllByAddress(address);
         if (persons.isEmpty()) {
-            log.info("Skipping address with no persons: " + address);
+            log.debug("Skipping address with no persons: " + address);
             return Optional.empty();
         }
 
@@ -174,7 +174,7 @@ public class PersonService {
     }
 
     public ArrayList<String> getEmailsByCity(String city) {
-        log.info("Asking repository for emails in city=" + city);
+        log.debug("Asking repository for emails in city=" + city);
         var persons = personRepository.findAllByCity(city);
         var result = new ArrayList<String>();
         for (Person person : persons) {

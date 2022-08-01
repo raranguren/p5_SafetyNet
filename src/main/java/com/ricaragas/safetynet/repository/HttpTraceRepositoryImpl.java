@@ -26,6 +26,8 @@ public class HttpTraceRepositoryImpl implements HttpTraceRepository {
         lastTrace = trace;
         var request = trace.getRequest();
         var response = trace.getResponse();
-        log.info("HTTP Request: {} {} --> Response: status={} {}", request.getMethod(), request.getUri(), response.getStatus(), response.getHeaders());
+
+        log.info("HTTP Request: {} {}", request.getMethod(), request.getUri());
+        log.info("HTTP Response: {} {}", response.getStatus(), response.getHeaders());
     }
 }

@@ -23,7 +23,7 @@ public class JsonDataRepository {
         try {
             var url = new URL(jsonDataAddress);
             copyOfJsonValues = mapper.readValue(url, JsonDataDTO.class);
-            log.info("Data retrieved from JSON file");
+            log.debug("Data retrieved from JSON file");
         } catch (IOException e) {
             log.fatal("Could not read JSON file: " + jsonDataAddress);
             throw new RuntimeException("Could not initialize data structure");

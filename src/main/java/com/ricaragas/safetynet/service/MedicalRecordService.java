@@ -23,17 +23,17 @@ public class MedicalRecordService {
     }
 
     public void create(MedicalRecord medicalRecord) throws AlreadyExistsException {
-        log.info("Forwarding to repository . . .");
+        log.debug("Forwarding to repository . . .");
         medicalRecordRepository.create(medicalRecord);
     }
 
     public void update(MedicalRecord medicalRecord) throws NotFoundException {
-        log.info("Forwarding to repository . . .");
+        log.debug("Forwarding to repository . . .");
         medicalRecordRepository.update(medicalRecord);
     }
 
     public void delete(MedicalRecord medicalRecord) throws NotFoundException {
-        log.info("Forwarding to repository . . .");
+        log.debug("Forwarding to repository . . .");
         medicalRecordRepository.delete(medicalRecord.firstName, medicalRecord.lastName);
     }
 

@@ -16,7 +16,7 @@ public class PersonRepository {
 
     public PersonRepository(JsonDataRepository jsonDataRepository) {
         persons = jsonDataRepository.get().persons;
-        log.info("Count of records: " + persons.size());
+        log.debug("Count of records: " + persons.size());
     }
 
     // CRUD OPERATIONS
@@ -29,12 +29,12 @@ public class PersonRepository {
             throw new AlreadyExistsException(warning);
         }
         persons.add(person);
-        log.info("Created a new record.");
+        log.debug("Created a new record.");
     }
 
     public Optional<Person> read(String firstName, String lastName) {
         var person = findOne(firstName, lastName);
-        log.info(person.isEmpty() ? "Returning empty result." : "Returning 1 record.");
+        log.debug(person.isEmpty() ? "Returning empty result." : "Returning 1 record.");
         return person;
     }
 
@@ -46,7 +46,7 @@ public class PersonRepository {
             throw new NotFoundException(warning);
         }
         persons.set(index.get(),person);
-        log.info("Updated existing record.");
+        log.debug("Updated existing record.");
     }
 
     public void delete(String firstName, String lastName) throws NotFoundException {
@@ -70,11 +70,11 @@ public class PersonRepository {
     private Optional<Integer> indexOf(String firstName, String lastName) {
         var searchResult = findOne(firstName, lastName);
         if (searchResult.isEmpty()) {
-            log.info("Record with name " + firstName + " " + lastName + " not found.");
+            log.debug("Record with name " + firstName + " " + lastName + " not found.");
             return Optional.empty();
         }
         int index = persons.indexOf(searchResult.get());
-        log.info("Record with name " + firstName + " " + lastName + " exists with index=" + index);
+        log.debug("Record with name " + firstName + " " + lastName + " exists with index=" + index);
         return Optional.of(index);
     }
 
@@ -89,7 +89,7 @@ public class PersonRepository {
         for (Person person : persons) {
             if (person.address.equals(address)) result.add(person);
         }
-        log.info("Found {} persons with address {}.", result.size(), address);
+        log.debug("Found {} persons with address {}.", result.size(), address);
         return result;
     }
 
@@ -98,7 +98,7 @@ public class PersonRepository {
         for (Person person : persons) {
             if (city.equals(person.city)) result.add(person);
         }
-        log.info("Found {} persons in city {}.", result.size(), city);
+        log.debug("Found {} persons in city {}.", result.size(), city);
         return result;
     }
 

@@ -28,25 +28,25 @@ public class FirestationService {
     }
 
     public void create(Firestation firestation) throws AlreadyExistsException {
-        log.info("Forwarding to repository . . .");
+        log.debug("Forwarding to repository . . .");
         firestationRepository.create(firestation);
     }
 
     public void update(Firestation firestation) throws NotFoundException {
-        log.info("Forwarding to repository . . .");
+        log.debug("Forwarding to repository . . .");
         firestationRepository.update(firestation);
     }
 
     public void delete(Firestation firestation) throws NotFoundException {
-        log.info("Forwarding to repository . . .");
+        log.debug("Forwarding to repository . . .");
         firestationRepository.delete(firestation.address);
     }
 
     public Optional<FirestationCoveragePerStationDTO> getCoverageReportByStationNumber(String stationNumber) {
-        log.info("Building report of coverage for station number {} . . .", stationNumber);
+        log.debug("Building report of coverage for station number {} . . .", stationNumber);
         ArrayList<String> addresses = firestationRepository.getAddressesByStationNumber(stationNumber);
         if (addresses.isEmpty()) {
-            log.info("No stations found. Returning empty result.");
+            log.debug("No stations found. Returning empty result.");
             return Optional.empty();
         }
         ArrayList<Person> persons = new ArrayList<>();
@@ -69,7 +69,7 @@ public class FirestationService {
     public Optional<FireAlertPerAddressDTO> getFireAlertByAddress(String address) {
         var station = firestationRepository.read(address);
         if (station.isEmpty()) {
-            log.info("Station with that address not found. Returning empty result.");
+            log.debug("Station with that address not found. Returning empty result.");
             return Optional.empty();
         }
         var result = new FireAlertPerAddressDTO();
@@ -95,7 +95,7 @@ public class FirestationService {
                 result.add(infoForAddress.get());
             }
         }
-        log.info("Included {} addresses for station number {}", addresses.size(), stationNumber);
+        log.debug("Included {} addresses for station number {}", addresses.size(), stationNumber);
         return result;
     }
 }

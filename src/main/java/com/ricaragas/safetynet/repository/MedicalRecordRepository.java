@@ -16,7 +16,7 @@ public class MedicalRecordRepository {
 
     public MedicalRecordRepository(JsonDataRepository jsonDataRepository) {
         medicalRecords = jsonDataRepository.get().medicalrecords;
-        log.info("Count of records: " + medicalRecords.size());
+        log.debug("Count of records: " + medicalRecords.size());
     }
 
     // CRUD OPERATIONS
@@ -29,12 +29,12 @@ public class MedicalRecordRepository {
             throw new AlreadyExistsException(warning);
         }
         medicalRecords.add(medicalRecord);
-        log.info("Created a new record.");
+        log.debug("Created a new record.");
     }
 
     public Optional<MedicalRecord> read(String firstName, String lastName) {
         var medicalRecord = findOne(firstName, lastName);
-        log.info(medicalRecord.isEmpty() ? "Returning empty result." : "Returning 1 record.");
+        log.debug(medicalRecord.isEmpty() ? "Returning empty result." : "Returning 1 record.");
         return medicalRecord;
     }
 
@@ -46,7 +46,7 @@ public class MedicalRecordRepository {
             throw new NotFoundException(warning);
         }
         medicalRecords.set(index.get(),medicalRecord);
-        log.info("Updated existing record.");
+        log.debug("Updated existing record.");
     }
 
     public void delete(String firstName, String lastName) throws NotFoundException {
@@ -57,6 +57,7 @@ public class MedicalRecordRepository {
             throw new NotFoundException(warning);
         }
         medicalRecords.remove((int)index.get());
+        log.info("Deleted a record");
     }
 
     // UTILS
@@ -70,11 +71,11 @@ public class MedicalRecordRepository {
     private Optional<Integer> indexOf(String firstName, String lastName) {
         var searchResult = findOne(firstName, lastName);
         if (searchResult.isEmpty()) {
-            log.info("Record with name " + firstName + " " + lastName + " not found.");
+            log.debug("Record with name " + firstName + " " + lastName + " not found.");
             return Optional.empty();
         }
         int index = medicalRecords.indexOf(searchResult.get());
-        log.info("Record with name " + firstName + " " + lastName + " exists with index=" + index);
+        log.debug("Record with name " + firstName + " " + lastName + " exists with index=" + index);
         return Optional.of(index);
     }
 

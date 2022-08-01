@@ -30,71 +30,71 @@ public class RootController {
 
     @GetMapping("firestation")
     public ResponseEntity<?> firestation(@RequestParam("stationNumber") String stationNumber) {
-        log.info("Received GET /firestation?stationNumber={} . . .", stationNumber);
+        log.debug("Received GET /firestation?stationNumber={} . . .", stationNumber);
         if (stationNumber == null) throwBadRequest();
         var result = firestationService.getCoverageReportByStationNumber(stationNumber);
-        log.info("Returning result with status 200 (Ok).");
+        log.debug("Returning result with status 200 (Ok).");
         return entityWithResultOrEmptyJson(result);
     }
 
     @GetMapping("childAlert")
     public Iterable<ChildAlertPerChildDTO> childAlert(@RequestParam("address") String address) {
-        log.info("Received GET /childAlert?address={} . . .", address);
+        log.debug("Received GET /childAlert?address={} . . .", address);
         if (address == null) throwBadRequest();
         ArrayList<ChildAlertPerChildDTO> result = personService.getChildAlertsByAddress(address);
-        log.info("Returning {} results with status 200 (Ok).", result.size());
+        log.debug("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }
 
     @GetMapping("phoneAlert")
     public Iterable<String> phoneAlert(@RequestParam("firestation") String stationNumber) {
-        log.info("Received GET /phoneAlert?firestation={} . . .", stationNumber);
+        log.debug("Received GET /phoneAlert?firestation={} . . .", stationNumber);
         if (stationNumber == null) throwBadRequest();
         ArrayList<String> result = firestationService.getUniquePhoneNumbersByStationNumber(stationNumber);
-        log.info("Returning {} results with status 200 (Ok).", result.size());
+        log.debug("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }
 
     @GetMapping("fire")
     public ResponseEntity<?> fire(@RequestParam("address") String address) {
-        log.info("Received GET /fire?address={} . . . ", address);
+        log.debug("Received GET /fire?address={} . . . ", address);
         if (address == null) throwBadRequest();
         var result = firestationService.getFireAlertByAddress(address);
-        log.info("Returning result with status 200 (Ok).");
+        log.debug("Returning result with status 200 (Ok).");
         return entityWithResultOrEmptyJson(result);
     }
 
     @GetMapping("flood/stations")
     public Iterable<FloodInfoPerAddressDTO> flood(@RequestParam("stations") ArrayList<String> stationNumbers) {
-        log.info("Received GET /flood/stations?stations={}", stationNumbers);
+        log.debug("Received GET /flood/stations?stations={}", stationNumbers);
         if (stationNumbers == null || stationNumbers.size() == 0) throwBadRequest();
         ArrayList<FloodInfoPerAddressDTO> result = firestationService.getFloodInfoByStationNumbers(stationNumbers);
-        log.info("Returning {} results with status 200 (Ok).", result.size());
+        log.debug("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }
 
     @GetMapping("personInfo")
     public PersonInfoPerPersonDTO personInfo(@RequestParam("firstName") String firstName, @PathParam("lastName") String lastName) {
-        log.info("Received GET /personInfo?firstName={}&lastName={} . . .", firstName, lastName);
+        log.debug("Received GET /personInfo?firstName={}&lastName={} . . .", firstName, lastName);
         var result = personService.getPersonInfo(firstName, lastName);
         if (result.isEmpty()) throwBadRequest();
-        log.info("Returning result with status 200 (Ok).");
+        log.debug("Returning result with status 200 (Ok).");
         return result.get();
     }
 
     @GetMapping("communityEmail")
     public Iterable<String> communityEmail(@RequestParam("city") String city) {
-        log.info("Received GET /communityEmail?city={} . . .", city);
+        log.debug("Received GET /communityEmail?city={} . . .", city);
         if (city == null) throwBadRequest();
         ArrayList<String> result = personService.getEmailsByCity(city);
-        log.info("Returning {} results with status 200 (Ok).", result.size());
+        log.debug("Returning {} results with status 200 (Ok).", result.size());
         return result;
     }
 
     // UTILS
 
     private void throwBadRequest() {
-        log.info("Returning status 400 (Bad request)");
+        log.debug("Returning status 400 (Bad request)");
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
