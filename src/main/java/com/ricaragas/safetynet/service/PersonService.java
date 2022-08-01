@@ -204,7 +204,7 @@ public class PersonService {
 
     public boolean isChild(Optional<Integer> age) {
         if (age.isEmpty()) {
-            log.warn("No date of birth. Assuming that they are not a child.");
+            log.error("No date of birth. Assuming that they are not a child.");
             return false;
         }
         return isChild(age.get());

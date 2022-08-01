@@ -25,7 +25,7 @@ public class MedicalRecordRepository {
         var index = indexOf(medicalRecord);
         if (index.isPresent()) {
             String warning = "Unable to create a new record. Another one exists with the same firstName and lastName.";
-            log.warn(warning);
+            log.error(warning);
             throw new AlreadyExistsException(warning);
         }
         medicalRecords.add(medicalRecord);
@@ -42,7 +42,7 @@ public class MedicalRecordRepository {
         var index = indexOf(medicalRecord);
         if (index.isEmpty()) {
             String warning = "Unable to update a record that doesn't exist";
-            log.warn(warning);
+            log.error(warning);
             throw new NotFoundException(warning);
         }
         medicalRecords.set(index.get(),medicalRecord);
@@ -53,7 +53,7 @@ public class MedicalRecordRepository {
         var index = indexOf(firstName, lastName);
         if (index.isEmpty()) {
             String warning = "Unable to delete a record that doesn't exist";
-            log.warn(warning);
+            log.error(warning);
             throw new NotFoundException(warning);
         }
         medicalRecords.remove((int)index.get());

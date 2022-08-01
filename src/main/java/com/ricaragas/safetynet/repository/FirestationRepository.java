@@ -30,7 +30,7 @@ public class FirestationRepository {
     public void create(Firestation firestation) throws AlreadyExistsException {
         if (firestations.containsKey(firestation.address)) {
             String warning = "Unable to create a new record. Another one exists with the same address.";
-            log.warn(warning);
+            log.error(warning);
             throw new AlreadyExistsException(warning);
         }
         firestations.put(firestation.address, firestation.station);
@@ -46,7 +46,7 @@ public class FirestationRepository {
     public void update(Firestation firestation) throws NotFoundException {
         if (!firestations.containsKey(firestation.address)) {
             String warning = "Unable to update a record that doesn't exist";
-            log.warn(warning);
+            log.error(warning);
             throw new NotFoundException(warning);
         }
         firestations.put(firestation.address, firestation.station);
@@ -56,7 +56,7 @@ public class FirestationRepository {
     public void delete(String address) throws NotFoundException {
         if (!firestations.containsKey(address)) {
             String warning = "Unable to delete a record that doesn't exist";
-            log.warn(warning);
+            log.error(warning);
             throw new NotFoundException(warning);
         }
         firestations.remove(address);

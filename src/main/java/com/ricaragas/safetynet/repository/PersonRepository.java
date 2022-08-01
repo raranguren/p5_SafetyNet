@@ -25,7 +25,7 @@ public class PersonRepository {
         var index = indexOf(person);
         if (index.isPresent()) {
             String warning = "Unable to create a new record. Another one exists with the same firstName and lastName.";
-            log.warn(warning);
+            log.error(warning);
             throw new AlreadyExistsException(warning);
         }
         persons.add(person);
@@ -42,7 +42,7 @@ public class PersonRepository {
         var index = indexOf(person);
         if (index.isEmpty()) {
             String warning = "Unable to update a record that doesn't exist";
-            log.warn(warning);
+            log.error(warning);
             throw new NotFoundException(warning);
         }
         persons.set(index.get(),person);
@@ -53,7 +53,7 @@ public class PersonRepository {
         var index = indexOf(firstName, lastName);
         if (index.isEmpty()) {
             String warning = "Unable to delete a record that doesn't exist";
-            log.warn(warning);
+            log.error(warning);
             throw new NotFoundException(warning);
         }
         persons.remove((int)index.get());
