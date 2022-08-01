@@ -46,7 +46,7 @@ public class MedicalRecordService {
         if (birthdate == null) return Optional.empty();
         LocalDate date;
         try {
-            date = LocalDate.parse(birthdate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+            date = LocalDate.parse(birthdate, getDateFormat());
         } catch (DateTimeParseException e) {
             return Optional.empty();
         }
@@ -54,4 +54,7 @@ public class MedicalRecordService {
         return Optional.of(age);
     }
 
+    public DateTimeFormatter getDateFormat() {
+        return DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    }
 }

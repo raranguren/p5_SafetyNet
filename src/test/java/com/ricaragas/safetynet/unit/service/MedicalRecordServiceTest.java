@@ -13,8 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -104,6 +104,41 @@ public class MedicalRecordServiceTest {
         // ASSERT
         verify(repository, times(1))
                 .read(firstName, lastName);
+    }
+
+    @Test
+    public void when_get_age_then_success() throws Exception {
+        // ARRANGE
+        int expectedAge = 22;
+        var today = LocalDate.now();
+        var birthdate = today.minusYears(expectedAge);
+        var birthdateAsText = birthdate.format(service.getDateFormat());
+        var medicalRecord = new MedicalRecord("A", "A", birthdateAsText, null, null);
+        // ACT
+        var result = service.getAge(medicalRecord);
+        // ASSERT
+        assertEquals(expectedAge, result.get());
+    }
+
+    @Test
+    public void when_get_age_wrong_format_then_empty() throws Exception {
+        // ARRANGE
+        String birthdateAsText = "";
+        var medicalRecord = new MedicalRecord("A", "A", birthdateAsText, null, null);
+        // ACT
+        var result = service.getAge(medicalRecord);
+        // ASSERT
+        assert(result.isEmpty());
+    }
+
+    @Test
+    public void when_get_age_with_nulls_then_empty() throws Exception {
+        // ARRANGE
+        var medicalRecord = new MedicalRecord("A", "A", null, null, null);
+        // ACT
+        var result = service.getAge(medicalRecord);
+        // ASSERT
+        assert(result.isEmpty());
     }
 
 }
