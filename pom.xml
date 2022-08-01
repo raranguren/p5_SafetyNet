@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.ricaragas</groupId>
 	<artifactId>safetynet</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>SafetyNet</name>
-	<description>Project 5 of Java course in OpenClassrooms</description>
+	<description>API for the app SafetyNet Alerts (Project 5 of Java course in OpenClassrooms)</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
